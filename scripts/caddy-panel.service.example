@@ -1,0 +1,14 @@
+[Unit]
+Description=FrankenPHP — caddy-panel
+After=network.target
+
+[Service]
+# 启动前自检：配置损坏时自动回滚到上次可用配置（var/last-good）
+ExecStartPre=/usr/bin/php /srv/caddy-panel/bin/panel doctor --fix
+ExecStart=/usr/local/bin/frankenphp run --config /srv/caddy-panel/etc/Caddyfile --adapter caddyfile
+WorkingDirectory=/srv/caddy-panel
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,580 @@
+<div id="caddy-panel-install-prototype">
+<style>
+#caddy-panel-install-prototype{
+  --ip-bg: light-dark(#eef1f6, #0d1117);
+  --ip-surface: light-dark(#ffffff, #161c24);
+  --ip-surface-2: light-dark(#f5f7fa, #1c242f);
+  --ip-border: light-dark(#dde3ec, #2b3542);
+  --ip-text: light-dark(#1b2734, #e4eaf2);
+  --ip-muted: light-dark(#5b6b7c, #94a3b4);
+  --ip-primary: light-dark(#1d63ed, #5c93ff);
+  --ip-primary-fg: light-dark(#ffffff, #0c1522);
+  --ip-green: light-dark(#16803c, #3fbe6b);
+  --ip-red: light-dark(#c43535, #ff6d6d);
+  --ip-amber: light-dark(#9a6207, #e9b44c);
+  --ip-code: light-dark(#f6f8fb, #10151d);
+  font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ip-text);
+}
+#caddy-panel-install-prototype *{ box-sizing: border-box; }
+#caddy-panel-install-prototype .ip-app{
+  display: flex;
+  flex-direction: column;
+  min-height: 640px;
+  background: var(--ip-bg);
+  border: 1px solid var(--ip-border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+#caddy-panel-install-prototype .ip-top{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  background: var(--ip-surface);
+  border-bottom: 1px solid var(--ip-border);
+}
+#caddy-panel-install-prototype .ip-logo{
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: var(--ip-primary);
+  color: var(--ip-primary-fg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+#caddy-panel-install-prototype .ip-top-title{ font-weight: 600; font-size: 15px; }
+#caddy-panel-install-prototype .ip-top-sub{ color: var(--ip-muted); font-size: 12px; margin-left: auto; }
+#caddy-panel-install-prototype .ip-body{ display: flex; flex: 1; min-height: 0; }
+#caddy-panel-install-prototype .ip-rail{
+  width: 218px;
+  flex: none;
+  background: var(--ip-surface);
+  border-right: 1px solid var(--ip-border);
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+#caddy-panel-install-prototype .ip-rail-title{ font-weight: 600; font-size: 13px; color: var(--ip-muted); text-transform: uppercase; letter-spacing: .04em; }
+#caddy-panel-install-prototype .ip-rail ol{ list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+#caddy-panel-install-prototype .ip-rail-item{
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 9px;
+  border-radius: 8px;
+  color: var(--ip-muted);
+  font-size: 13px;
+}
+#caddy-panel-install-prototype .ip-rail-item .ip-num{
+  width: 20px;
+  height: 20px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--ip-surface-2);
+  border: 1px solid var(--ip-border);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+}
+#caddy-panel-install-prototype .ip-rail-item.is-done{ color: var(--ip-text); }
+#caddy-panel-install-prototype .ip-rail-item.is-done .ip-num{ background: var(--ip-green); border-color: var(--ip-green); color: #fff; }
+#caddy-panel-install-prototype .ip-rail-item.is-active{ background: var(--ip-surface-2); color: var(--ip-primary); font-weight: 500; }
+#caddy-panel-install-prototype .ip-rail-item.is-active .ip-num{ background: var(--ip-primary); border-color: var(--ip-primary); color: var(--ip-primary-fg); }
+#caddy-panel-install-prototype .ip-rail-note{ margin-top: auto; font-size: 12px; color: var(--ip-muted); background: var(--ip-surface-2); border: 1px dashed var(--ip-border); border-radius: 8px; padding: 9px 10px; }
+#caddy-panel-install-prototype .ip-main{ flex: 1; min-width: 0; padding: 20px 24px; display: flex; flex-direction: column; }
+#caddy-panel-install-prototype .ip-step{ display: none; }
+#caddy-panel-install-prototype .ip-step.is-active{ display: block; }
+#caddy-panel-install-prototype .ip-step-title{ font-size: 17px; font-weight: 600; margin-bottom: 4px; }
+#caddy-panel-install-prototype .ip-step-sub{ color: var(--ip-muted); margin-bottom: 16px; }
+#caddy-panel-install-prototype .ip-card{ background: var(--ip-surface); border: 1px solid var(--ip-border); border-radius: 12px; padding: 16px; }
+#caddy-panel-install-prototype .ip-card + .ip-card{ margin-top: 12px; }
+#caddy-panel-install-prototype .ip-card-title{ font-weight: 600; margin-bottom: 10px; }
+#caddy-panel-install-prototype .ip-banner{ display: flex; gap: 10px; align-items: flex-start; border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; font-size: 13px; }
+#caddy-panel-install-prototype .ip-banner-ok{ background: rgba(63,190,107,.12); border: 1px solid rgba(63,190,107,.45); }
+#caddy-panel-install-prototype .ip-banner-err{ background: rgba(255,109,109,.12); border: 1px solid rgba(255,109,109,.45); }
+#caddy-panel-install-prototype .ip-banner-warn{ background: rgba(233,180,76,.12); border: 1px solid rgba(233,180,76,.45); }
+#caddy-panel-install-prototype .ip-banner-gray{ background: var(--ip-surface-2); border: 1px solid var(--ip-border); }
+#caddy-panel-install-prototype .ip-btn{
+  border: 1px solid var(--ip-border);
+  background: var(--ip-surface);
+  color: var(--ip-text);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font: inherit;
+  cursor: pointer;
+}
+#caddy-panel-install-prototype .ip-btn:hover{ background: var(--ip-surface-2); }
+#caddy-panel-install-prototype .ip-btn-primary{ background: var(--ip-primary); border-color: var(--ip-primary); color: var(--ip-primary-fg); }
+#caddy-panel-install-prototype .ip-btn-primary:hover{ filter: brightness(1.06); }
+#caddy-panel-install-prototype .ip-btn:disabled{ opacity: .55; cursor: not-allowed; }
+#caddy-panel-install-prototype .ip-btn-row{ display: flex; gap: 8px; flex-wrap: wrap; }
+#caddy-panel-install-prototype .ip-seg{ display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+#caddy-panel-install-prototype .ip-seg-btn{ border: 1px solid var(--ip-border); background: var(--ip-surface); color: var(--ip-muted); border-radius: 999px; padding: 5px 12px; font: inherit; font-size: 12px; cursor: pointer; }
+#caddy-panel-install-prototype .ip-seg-btn.is-active{ background: var(--ip-primary); border-color: var(--ip-primary); color: var(--ip-primary-fg); }
+#caddy-panel-install-prototype .ip-check-list{ display: flex; flex-direction: column; gap: 0; }
+#caddy-panel-install-prototype .ip-check{ display: flex; gap: 10px; align-items: flex-start; padding: 9px 4px; border-bottom: 1px solid var(--ip-border); }
+#caddy-panel-install-prototype .ip-check:last-child{ border-bottom: 0; }
+#caddy-panel-install-prototype .ip-check-icon{ width: 18px; height: 18px; flex: none; margin-top: 1px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; }
+#caddy-panel-install-prototype .ip-check-icon.ok{ background: rgba(63,190,107,.15); color: var(--ip-green); }
+#caddy-panel-install-prototype .ip-check-icon.bad{ background: rgba(255,109,109,.15); color: var(--ip-red); }
+#caddy-panel-install-prototype .ip-check-name{ font-weight: 500; }
+#caddy-panel-install-prototype .ip-check-desc{ color: var(--ip-muted); font-size: 12px; }
+#caddy-panel-install-prototype .ip-mode-grid{ display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+#caddy-panel-install-prototype .ip-mode{
+  border: 1px solid var(--ip-border);
+  background: var(--ip-surface);
+  border-radius: 12px;
+  padding: 14px;
+  cursor: pointer;
+}
+#caddy-panel-install-prototype .ip-mode:hover{ border-color: var(--ip-primary); }
+#caddy-panel-install-prototype .ip-mode.is-active{ border-color: var(--ip-primary); box-shadow: 0 0 0 2px rgba(29,99,237,.18); }
+#caddy-panel-install-prototype .ip-mode-tag{ font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 7px; }
+#caddy-panel-install-prototype .ip-pill{ display: inline-flex; align-items: center; gap: 5px; font-size: 11px; border-radius: 999px; padding: 2px 8px; background: var(--ip-surface-2); border: 1px solid var(--ip-border); color: var(--ip-muted); }
+#caddy-panel-install-prototype .ip-pill-ok{ background: rgba(63,190,107,.14); border-color: rgba(63,190,107,.4); color: var(--ip-green); }
+#caddy-panel-install-prototype .ip-form{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+#caddy-panel-install-prototype .ip-field{ display: flex; flex-direction: column; gap: 5px; }
+#caddy-panel-install-prototype .ip-field-wide{ grid-column: 1 / -1; }
+#caddy-panel-install-prototype .ip-label{ font-size: 12px; color: var(--ip-muted); }
+#caddy-panel-install-prototype .ip-input, #caddy-panel-install-prototype .ip-select{
+  border: 1px solid var(--ip-border);
+  background: var(--ip-surface);
+  color: var(--ip-text);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font: inherit;
+  width: 100%;
+}
+#caddy-panel-install-prototype .ip-input:disabled{ opacity: .65; }
+#caddy-panel-install-prototype .ip-switch{ display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+#caddy-panel-install-prototype .ip-switch input{ display: none; }
+#caddy-panel-install-prototype .ip-switch-track{ width: 38px; height: 22px; border-radius: 999px; background: var(--ip-border); position: relative; transition: background .15s; }
+#caddy-panel-install-prototype .ip-switch-track::after{ content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: left .15s; }
+#caddy-panel-install-prototype .ip-switch input:checked + .ip-switch-track{ background: var(--ip-primary); }
+#caddy-panel-install-prototype .ip-switch input:checked + .ip-switch-track::after{ left: 19px; }
+#caddy-panel-install-prototype .ip-progress{ height: 8px; border-radius: 999px; background: var(--ip-surface-2); border: 1px solid var(--ip-border); overflow: hidden; margin: 10px 0 6px; }
+#caddy-panel-install-prototype .ip-progress-fill{ height: 100%; width: 0; background: var(--ip-primary); transition: width .25s; }
+#caddy-panel-install-prototype .ip-progress-label{ font-size: 12px; color: var(--ip-muted); }
+#caddy-panel-install-prototype .ip-code{ font-family: ui-monospace, Consolas, monospace; font-size: 12px; background: var(--ip-code); border: 1px solid var(--ip-border); border-radius: 6px; padding: 2px 6px; }
+#caddy-panel-install-prototype .ip-notice{ font-size: 13px; border-radius: 8px; padding: 9px 11px; margin-top: 10px; background: var(--ip-surface-2); border: 1px solid var(--ip-border); }
+#caddy-panel-install-prototype .ip-actions{ margin-top: auto; padding-top: 18px; display: flex; justify-content: space-between; gap: 10px; }
+#caddy-panel-install-prototype .ip-summary{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+#caddy-panel-install-prototype .ip-summary-item{ background: var(--ip-surface-2); border: 1px solid var(--ip-border); border-radius: 10px; padding: 10px 12px; }
+#caddy-panel-install-prototype .ip-summary-label{ font-size: 12px; color: var(--ip-muted); }
+#caddy-panel-install-prototype .ip-summary-value{ font-weight: 500; word-break: break-all; }
+@media (max-width: 820px){
+  #caddy-panel-install-prototype .ip-body{ flex-direction: column; }
+  #caddy-panel-install-prototype .ip-rail{ width: 100%; border-right: 0; border-bottom: 1px solid var(--ip-border); }
+  #caddy-panel-install-prototype .ip-rail ol{ flex-direction: row; flex-wrap: wrap; }
+  #caddy-panel-install-prototype .ip-rail-note{ display: none; }
+  #caddy-panel-install-prototype .ip-mode-grid{ grid-template-columns: 1fr; }
+  #caddy-panel-install-prototype .ip-form, #caddy-panel-install-prototype .ip-summary{ grid-template-columns: 1fr; }
+}
+</style>
+
+<div class="ip-app">
+  <header class="ip-top">
+    <span class="ip-logo">⌂</span>
+    <span class="ip-top-title">caddy-panel 安装向导</span>
+    <span class="ip-top-sub">v0.8.0 预发布 · 无需 SSH · 任意 PHP 8.1+ Web 服务器</span>
+  </header>
+
+  <div class="ip-body">
+    <aside class="ip-rail">
+      <div class="ip-rail-title">安装闭环</div>
+      <ol>
+        <li class="ip-rail-item is-done" data-rail="1"><span class="ip-num">✓</span>检查 APP_ROOT（panel.bootstrap.php）</li>
+        <li class="ip-rail-item is-done" data-rail="2"><span class="ip-num">✓</span>上传 webroot 页面</li>
+        <li class="ip-rail-item is-active" data-rail="3"><span class="ip-num">3</span>启动 install.php（引导检查）</li>
+        <li class="ip-rail-item" data-rail="4"><span class="ip-num">4</span>获取安装包（三种模式）</li>
+        <li class="ip-rail-item" data-rail="5"><span class="ip-num">5</span>填写配置</li>
+        <li class="ip-rail-item" data-rail="6"><span class="ip-num">6</span>完成安装</li>
+      </ol>
+      <div class="ip-rail-note">APP_ROOT 需先在 panel.bootstrap.php 中填写（文件操作，不经由 Web），向导只负责检查；FTP / 文件管理器即可完成上传。</div>
+    </aside>
+
+    <main class="ip-main">
+
+      <!-- Step 0: 引导检查 -->
+      <section class="ip-step is-active" data-step="0">
+        <div class="ip-step-title">引导检查</div>
+        <div class="ip-step-sub">panel.bootstrap.php 读取 APP_ROOT 后的判定结果（演示可切换四种状态）</div>
+        <div class="ip-seg">
+          <button type="button" class="ip-seg-btn is-active" data-state="not-installed">未安装 · 进入向导</button>
+          <button type="button" class="ip-seg-btn" data-state="bad-path">APP_ROOT 路径错误</button>
+          <button type="button" class="ip-seg-btn" data-state="missing-code">代码缺失</button>
+          <button type="button" class="ip-seg-btn" data-state="locked">已安装 · 锁定</button>
+        </div>
+
+        <div class="ip-state" data-state-view="not-installed">
+          <div class="ip-banner ip-banner-warn">检测到 APP_ROOT 可访问但系统尚未安装，正在准备安装向导。</div>
+          <div class="ip-card">
+            <div class="ip-card-title">即将开始的闭环</div>
+            <div class="ip-check-list">
+              <div class="ip-check"><span class="ip-check-icon ok">✓</span><div><div class="ip-check-name">APP_ROOT 检查通过</div><div class="ip-check-desc">/home/user/app（webroot 之外，HTTP 不可达）；路径由用户编辑 panel.bootstrap.php 指定，向导不提供 Web 修改入口</div></div></div>
+              <div class="ip-check"><span class="ip-check-icon ok">✓</span><div><div class="ip-check-name">webroot 页面已上传</div><div class="ip-check-desc">站点根目录含 panel.bootstrap.php / index.php / install.php</div></div></div>
+              <div class="ip-check"><span class="ip-check-icon ok">✓</span><div><div class="ip-check-name">安装包尚未获取</div><div class="ip-check-desc">将通过三种模式之一获取：独立上传 / 服务端下载 / 页面上传</div></div></div>
+            </div>
+            <div class="ip-btn-row" style="margin-top:12px"><button type="button" class="ip-btn ip-btn-primary" data-begin>开始安装</button></div>
+          </div>
+        </div>
+
+        <div class="ip-state" data-state-view="bad-path" hidden>
+          <div class="ip-banner ip-banner-err">APP_ROOT 路径错误：无法解析 /home/user/app（realpath 失败）。</div>
+          <div class="ip-card">
+            <div class="ip-card-title">排查与修复</div>
+            <div class="ip-check-list">
+              <div class="ip-check"><span class="ip-check-icon bad">!</span><div><div class="ip-check-name">请填写绝对路径</div><div class="ip-check-desc">相对路径不被接受，例如 /home/user/app</div></div></div>
+              <div class="ip-check"><span class="ip-check-icon bad">!</span><div><div class="ip-check-name">确认目录可读</div><div class="ip-check-desc">PHP 进程需可读取该目录；open_basedir 受限时需调整</div></div></div>
+              <div class="ip-check"><span class="ip-check-icon bad">!</span><div><div class="ip-check-name">修改位置</div><div class="ip-check-desc">编辑 webroot 下 <span class="ip-code">panel.bootstrap.php</span> 中的 APP_ROOT 常量后刷新</div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ip-state" data-state-view="missing-code" hidden>
+          <div class="ip-banner ip-banner-warn">APP_ROOT 存在但缺少应用代码，无法继续安装。</div>
+          <div class="ip-card">
+            <div class="ip-card-title">缺少的目录</div>
+            <div class="ip-check-list">
+              <div class="ip-check"><span class="ip-check-icon bad">×</span><div><div class="ip-check-name">src/</div><div class="ip-check-desc">PHP 后端源码</div></div></div>
+              <div class="ip-check"><span class="ip-check-icon bad">×</span><div><div class="ip-check-name">vendor/</div><div class="ip-check-desc">已打包依赖</div></div></div>
+              <div class="ip-check"><span class="ip-check-icon bad">×</span><div><div class="ip-check-name">manifest.json</div><div class="ip-check-desc">版本与校验信息</div></div></div>
+            </div>
+            <div class="ip-text" style="color:var(--ip-muted);font-size:13px;margin-top:10px">可通过下方「获取安装包」三种模式之一补齐代码，或在文件管理器中把安装包 app/ 内容上传到该目录。</div>
+          </div>
+        </div>
+
+        <div class="ip-state" data-state-view="locked" hidden>
+          <div class="ip-banner ip-banner-gray">install.php 已锁定：系统已完成安装，拒绝再次运行安装向导。</div>
+          <div class="ip-card">
+            <div class="ip-card-title">如需重新安装</div>
+            <div class="ip-check-list">
+              <div class="ip-check"><span class="ip-check-icon ok">i</span><div><div class="ip-check-name">删除安装标记</div><div class="ip-check-desc">删除 APP_ROOT/var/installed 后刷新可重新进入向导</div></div></div>
+              <div class="ip-check"><span class="ip-check-icon ok">i</span><div><div class="ip-check-name">或使用 CLI</div><div class="ip-check-desc"><span class="ip-code">php bin/panel reinstall</span>（有意的恢复动作）</div></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Step 1: 环境检查 -->
+      <section class="ip-step" data-step="1">
+        <div class="ip-step-title">环境检查</div>
+        <div class="ip-step-sub">系统自动探测，所有项通过后即可进入下一步；结果决定可用的包获取模式。</div>
+        <div class="ip-card">
+          <div class="ip-card-title">运行时环境</div>
+          <div class="ip-check-list">
+            <div class="ip-check"><span class="ip-check-icon ok">✓</span><div><div class="ip-check-name">PHP 8.2</div><div class="ip-check-desc">要求 ≥ 8.1</div></div></div>
+            <div class="ip-check"><span class="ip-check-icon ok">✓</span><div><div class="ip-check-name">pdo_sqlite</div><div class="ip-check-desc">元数据、审计、日志聚合</div></div></div>
+            <div class="ip-check"><span class="ip-check-icon ok">✓</span><div><div class="ip-check-name">openssl / curl</div><div class="ip-check-desc">Admin API 客户端与证书处理</div></div></div>
+            <div class="ip-check"><span class="ip-check-icon ok">✓</span><div><div class="ip-check-name">ZipArchive</div><div class="ip-check-desc">安装包解压（模式 B / C 需要）</div></div></div>
+            <div class="ip-check"><span class="ip-check-icon ok">✓</span><div><div class="ip-check-name">APP_ROOT 可写</div><div class="ip-check-desc">/home/user/app 可由 PHP 进程写入</div></div></div>
+            <div class="ip-check"><span class="ip-check-icon ok">✓</span><div><div class="ip-check-name">webroot 隔离</div><div class="ip-check-desc">APP_ROOT 不在站点根目录之内（realpath 校验）</div></div></div>
+            <div class="ip-check"><span class="ip-check-icon ok">✓</span><div><div class="ip-check-name">出站网络</div><div class="ip-check-desc">模式 B（服务端下载）可用</div></div></div>
+            <div class="ip-check"><span class="ip-check-icon ok">✓</span><div><div class="ip-check-name">上传上限 64MB</div><div class="ip-check-desc">模式 C（页面上传）可用；安装包约 32MB</div></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Step 2: 选择包来源 -->
+      <section class="ip-step" data-step="2">
+        <div class="ip-step-title">获取安装包</div>
+        <div class="ip-step-sub">三种模式任选其一；模式 A 始终可用，B/C 取决于环境探测结果。</div>
+        <div class="ip-mode-grid">
+          <div class="ip-mode" data-mode="a">
+            <div class="ip-mode-tag">模式 A · 独立上传 <span class="ip-pill ip-pill-ok">始终可用</span></div>
+            <div style="color:var(--ip-muted);font-size:13px">已在文件管理器中把安装包 app/ 内容上传到 APP_ROOT，向导仅做校验与初始化。</div>
+          </div>
+          <div class="ip-mode" data-mode="b">
+            <div class="ip-mode-tag">模式 B · 服务端下载 <span class="ip-pill ip-pill-ok">已探测可用</span></div>
+            <div style="color:var(--ip-muted);font-size:13px">填写发布包 URL 与 SHA-256，服务器下载、校验后解压到 APP_ROOT。</div>
+          </div>
+          <div class="ip-mode" data-mode="c">
+            <div class="ip-mode-tag">模式 C · 页面上传 <span class="ip-pill ip-pill-ok">上限 64MB</span></div>
+            <div style="color:var(--ip-muted);font-size:13px">通过浏览器上传 zip，向导校验后解压到 APP_ROOT。</div>
+          </div>
+        </div>
+
+        <div class="ip-card" style="margin-top:14px">
+          <div class="ip-card-title" data-mode-form-title>模式 A · 独立上传</div>
+
+          <div class="ip-form" data-mode-form="a">
+            <div class="ip-field ip-field-wide"><label class="ip-label">APP_ROOT</label><input class="ip-input" value="/home/user/app" disabled></div>
+            <div class="ip-field ip-field-wide"><label class="ip-label">操作</label><div class="ip-btn-row"><button type="button" class="ip-btn" data-detect-code>检测代码</button></div></div>
+            <div class="ip-field ip-field-wide"><div class="ip-notice" data-detect-result hidden>检测通过：src/ ✓　vendor/ ✓　manifest.json ✓</div></div>
+          </div>
+
+          <div class="ip-form" data-mode-form="b" hidden>
+            <div class="ip-field ip-field-wide"><label class="ip-label">发布包 URL</label><input class="ip-input" value="https://github.com/caddy-panel/caddy-panel/releases/download/v0.8.0/caddy-panel-app.zip"></div>
+            <div class="ip-field ip-field-wide"><label class="ip-label">SHA-256（必填，用于校验）</label><input class="ip-input" value="9f2a8e...c1d7" style="font-family:ui-monospace,Consolas,monospace"></div>
+            <div class="ip-field ip-field-wide"><label class="ip-label">操作</label><div class="ip-btn-row"><button type="button" class="ip-btn" data-download>下载并校验</button></div></div>
+            <div class="ip-field ip-field-wide"><div class="ip-progress" hidden data-download-progress><div class="ip-progress-fill" data-download-fill></div></div><div class="ip-progress-label" data-download-label></div></div>
+          </div>
+
+          <div class="ip-form" data-mode-form="c" hidden>
+            <div class="ip-field ip-field-wide"><label class="ip-label">选择安装包 zip（约 32MB，上传上限 64MB）</label><input class="ip-input" type="file" accept=".zip"></div>
+            <div class="ip-field ip-field-wide"><label class="ip-label">操作</label><div class="ip-btn-row"><button type="button" class="ip-btn" data-upload>上传</button></div></div>
+            <div class="ip-field ip-field-wide"><div class="ip-progress" hidden data-upload-progress><div class="ip-progress-fill" data-upload-fill></div></div><div class="ip-progress-label" data-upload-label></div></div>
+          </div>
+        </div>
+
+        <div class="ip-notice" data-package-status hidden>安装包已就绪：caddy-panel-app-v0.8.0.zip（32.4MB）· 版本 v0.8.0 · 可进入包校验</div>
+        <div class="ip-notice" data-package-hint hidden>请先通过三种模式之一获取安装包，再进入下一步。</div>
+      </section>
+
+      <!-- Step 3: 包校验 -->
+      <section class="ip-step" data-step="3">
+        <div class="ip-step-title">包校验</div>
+        <div class="ip-step-sub">安全关键步骤：校验来源、结构与版本兼容性，全部通过才允许安装。</div>
+        <div class="ip-card">
+          <div class="ip-check-list">
+            <div class="ip-check"><span class="ip-check-icon ok">✓</span><div><div class="ip-check-name">SHA-256 校验</div><div class="ip-check-desc">与发布页摘要一致，防止篡改 / 中间人</div></div></div>
+            <div class="ip-check"><span class="ip-check-icon ok">✓</span><div><div class="ip-check-name">zip-slip 防护</div><div class="ip-check-desc">无路径穿越、无符号链接、文件数量在限制内</div></div></div>
+            <div class="ip-check"><span class="ip-check-icon ok">✓</span><div><div class="ip-check-name">结构白名单</div><div class="ip-check-desc">仅允许 src/ vendor/ etc/ templates/ bin/ manifest.json</div></div></div>
+            <div class="ip-check"><span class="ip-check-icon ok">✓</span><div><div class="ip-check-name">版本兼容</div><div class="ip-check-desc">应用包 v0.8.0 ≥ webroot 启动器 v0.8.0（manifest.json 比对）</div></div></div>
+            <div class="ip-check"><span class="ip-check-icon ok">✓</span><div><div class="ip-check-name">解压完成</div><div class="ip-check-desc">已写入 /home/user/app，临时文件已清理</div></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Step 4: 配置 -->
+      <section class="ip-step" data-step="4">
+        <div class="ip-step-title">填写配置</div>
+        <div class="ip-step-sub">将写入 APP_ROOT/config.php，并创建 var/ 与 etc/ 状态目录。</div>
+        <div class="ip-card">
+          <div class="ip-card-title">管理员与认证</div>
+          <div class="ip-form">
+            <div class="ip-field"><label class="ip-label">管理员用户名</label><input class="ip-input" value="admin"></div>
+            <div class="ip-field"><label class="ip-label">管理员密码</label><input class="ip-input" type="password" value="••••••••••"></div>
+            <div class="ip-field"><label class="ip-label">确认密码</label><input class="ip-input" type="password" value="••••••••••"></div>
+            <div class="ip-field"><label class="ip-label">本地免认证</label><label class="ip-switch"><input type="checkbox" data-install-local-auth checked><span class="ip-switch-track"></span></label><span style="color:var(--ip-muted);font-size:12px">127.0.0.1 / ::1 访问自动进入管理员</span></div>
+            <div class="ip-field ip-field-wide"><label class="ip-label">远程初始化 setup token</label><input class="ip-input" value="（安装完成后由 php bin/panel setup 生成，或放置 var/setup.token）" disabled></div>
+          </div>
+        </div>
+        <div class="ip-card">
+          <div class="ip-card-title">Caddy 连接</div>
+          <div class="ip-form">
+            <div class="ip-field ip-field-wide"><label class="ip-label">Admin API 地址（config.php → caddy.admin_api）</label><input class="ip-input" value="http://127.0.0.1:2019"></div>
+            <div class="ip-field ip-field-wide"><label class="ip-label">站点片段目录（相对 APP_ROOT）</label><input class="ip-input" value="etc/caddy.d"></div>
+            <div class="ip-field ip-field-wide"><label class="ip-label">主 Caddyfile（相对 APP_ROOT）</label><input class="ip-input" value="etc/Caddyfile（自动组装）"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Step 5: 完成 -->
+      <section class="ip-step" data-step="5">
+        <div class="ip-banner ip-banner-ok">安装完成：caddy-panel v0.8.0 已就绪，install.php 已锁定。</div>
+        <div class="ip-card">
+          <div class="ip-card-title">部署摘要</div>
+          <div class="ip-summary">
+            <div class="ip-summary-item"><div class="ip-summary-label">安装位置</div><div class="ip-summary-value">/home/user/app</div></div>
+            <div class="ip-summary-item"><div class="ip-summary-label">Admin API</div><div class="ip-summary-value">http://127.0.0.1:2019</div></div>
+            <div class="ip-summary-item"><div class="ip-summary-label">管理员</div><div class="ip-summary-value">admin（Argon2id）</div></div>
+            <div class="ip-summary-item"><div class="ip-summary-label">本地免认证</div><div class="ip-summary-value">已启用</div></div>
+            <div class="ip-summary-item"><div class="ip-summary-label">运行态数据</div><div class="ip-summary-value">var/（SQLite、备份、日志）</div></div>
+            <div class="ip-summary-item"><div class="ip-summary-label">install.php</div><div class="ip-summary-value">已锁定（var/installed）</div></div>
+          </div>
+        </div>
+        <div class="ip-card">
+          <div class="ip-card-title">后续</div>
+          <div class="ip-text" style="color:var(--ip-muted);font-size:13px">进入登录页即可使用；密码可通过 CLI、配置文件一次性重置或设置页修改；升级可复用同一获取/校验机制（P1）。</div>
+          <div class="ip-btn-row" style="margin-top:12px"><button type="button" class="ip-btn ip-btn-primary" data-enter-login>进入登录页</button><button type="button" class="ip-btn" data-show-docs>查看部署文档</button></div>
+          <div class="ip-notice" data-finish-notice role="status" aria-live="polite" hidden></div>
+        </div>
+      </section>
+
+      <footer class="ip-actions">
+        <button type="button" class="ip-btn" data-nav="back" hidden>上一步</button>
+        <span style="flex:1"></span>
+        <button type="button" class="ip-btn ip-btn-primary" data-nav="next">开始安装</button>
+      </footer>
+    </main>
+  </div>
+</div>
+
+<script>
+(function () {
+  var root = document.getElementById('caddy-panel-install-prototype');
+  if (!root) { return; }
+
+  var steps = root.querySelectorAll('.ip-step');
+  var railItems = root.querySelectorAll('.ip-rail-item');
+  var backBtn = root.querySelector('[data-nav="back"]');
+  var nextBtn = root.querySelector('[data-nav="next"]');
+  var current = 0;
+  var packageReady = false;
+
+  var nextLabels = ['开始安装', '下一步：获取安装包', '下一步：包校验', '下一步：填写配置', '完成安装'];
+
+  function railFor(step) {
+    if (step <= 1) { return 3; }
+    if (step <= 3) { return 4; }
+    if (step === 4) { return 5; }
+    return 6;
+  }
+
+  function goTo(n) {
+    if (n < 0 || n > 5) { return; }
+    if (n === 3 && !packageReady) {
+      var hint = root.querySelector('[data-package-hint]');
+      if (hint) { hint.hidden = false; }
+      return;
+    }
+    current = n;
+    steps.forEach(function (s) {
+      s.classList.toggle('is-active', Number(s.getAttribute('data-step')) === n);
+    });
+    var rail = railFor(n);
+    railItems.forEach(function (r) {
+      var idx = Number(r.getAttribute('data-rail'));
+      r.classList.toggle('is-active', idx === rail);
+      r.classList.toggle('is-done', idx < rail || (idx <= 2));
+    });
+    backBtn.hidden = n === 0;
+    if (n === 5) { nextBtn.hidden = true; } else {
+      nextBtn.hidden = false;
+      nextBtn.textContent = nextLabels[n] || '下一步';
+    }
+  }
+
+  function setProgress(barSel, fillSel, labelSel, pct, label) {
+    var bar = root.querySelector(barSel);
+    var fill = root.querySelector(fillSel);
+    var label = root.querySelector(labelSel);
+    if (bar) { bar.hidden = false; }
+    if (fill) { fill.style.width = pct + '%'; }
+    if (label) { label.textContent = label || ''; }
+  }
+
+  root.addEventListener('click', function (e) {
+    var seg = e.target.closest('[data-state]');
+    if (seg) {
+      root.querySelectorAll('[data-state]').forEach(function (b) {
+        b.classList.toggle('is-active', b === seg);
+      });
+      var name = seg.getAttribute('data-state');
+      root.querySelectorAll('[data-state-view]').forEach(function (v) {
+        v.hidden = v.getAttribute('data-state-view') !== name;
+      });
+      return;
+    }
+
+    var begin = e.target.closest('[data-begin]');
+    if (begin) { goTo(1); return; }
+
+    var nav = e.target.closest('[data-nav]');
+    if (nav) {
+      var dir = nav.getAttribute('data-nav');
+      if (dir === 'back') { goTo(current - 1); return; }
+      if (current === 4) {
+        var btn = nav;
+        btn.disabled = true;
+        btn.textContent = '安装中…';
+        setTimeout(function () {
+          btn.disabled = false;
+          btn.textContent = nextLabels[4];
+          goTo(5);
+        }, 700);
+        return;
+      }
+      goTo(current + 1);
+      return;
+    }
+
+    var mode = e.target.closest('[data-mode]');
+    if (mode) {
+      root.querySelectorAll('[data-mode]').forEach(function (m) {
+        m.classList.toggle('is-active', m === mode);
+      });
+      var m = mode.getAttribute('data-mode');
+      root.querySelectorAll('[data-mode-form]').forEach(function (f) {
+        f.hidden = f.getAttribute('data-mode-form') !== m;
+      });
+      var title = root.querySelector('[data-mode-form-title]');
+      var names = { a: '模式 A · 独立上传', b: '模式 B · 服务端下载', c: '模式 C · 页面上传' };
+      if (title) { title.textContent = names[m]; }
+      return;
+    }
+
+    var detect = e.target.closest('[data-detect-code]');
+    if (detect) {
+      var dr = root.querySelector('[data-detect-result]');
+      if (dr) {
+        dr.hidden = false;
+        dr.textContent = '检测通过：src/ ✓　vendor/ ✓　manifest.json ✓（v0.8.0）';
+      }
+      packageReady = true;
+      root.querySelector('[data-package-status]').hidden = false;
+      root.querySelector('[data-package-hint]').hidden = true;
+      return;
+    }
+
+    var download = e.target.closest('[data-download]');
+    if (download) {
+      var p = 0;
+      setProgress('[data-download-progress]', '[data-download-fill]', '[data-download-label]', 0, '开始下载…');
+      var timer = setInterval(function () {
+        p += 8 + Math.round(Math.random() * 12);
+        if (p >= 100) {
+          p = 100;
+          clearInterval(timer);
+          setProgress('[data-download-progress]', '[data-download-fill]', '[data-download-label]', 100, '下载完成 32.4MB · SHA-256 匹配 ✓');
+          packageReady = true;
+          root.querySelector('[data-package-status]').hidden = false;
+          root.querySelector('[data-package-hint]').hidden = true;
+        } else {
+          setProgress('[data-download-progress]', '[data-download-fill]', '[data-download-label]', p, '下载中 ' + p + '%');
+        }
+      }, 180);
+      return;
+    }
+
+    var upload = e.target.closest('[data-upload]');
+    if (upload) {
+      var up = 0;
+      setProgress('[data-upload-progress]', '[data-upload-fill]', '[data-upload-label]', 0, '开始上传…');
+      var ut = setInterval(function () {
+        up += 7 + Math.round(Math.random() * 14);
+        if (up >= 100) {
+          up = 100;
+          clearInterval(ut);
+          setProgress('[data-upload-progress]', '[data-upload-fill]', '[data-upload-label]', 100, '上传完成 32.4MB · 校验通过 ✓');
+          packageReady = true;
+          root.querySelector('[data-package-status]').hidden = false;
+          root.querySelector('[data-package-hint]').hidden = true;
+        } else {
+          setProgress('[data-upload-progress]', '[data-upload-fill]', '[data-upload-label]', up, '上传中 ' + up + '%');
+        }
+      }, 180);
+      return;
+    }
+
+    var enterLogin = e.target.closest('[data-enter-login]');
+    if (enterLogin) {
+      var fn = root.querySelector('[data-finish-notice]');
+      if (fn) {
+        fn.hidden = false;
+        fn.textContent = '（演示）已跳转到登录页：远程访问需密码登录，本地访问自动进入管理员。';
+      }
+      return;
+    }
+
+    var docs = e.target.closest('[data-show-docs]');
+    if (docs) {
+      var fd = root.querySelector('[data-finish-notice]');
+      if (fd) {
+        fd.hidden = false;
+        fd.textContent = '（演示）部署文档：webroot 指向 public/ 或按 §9.1 目录布局上传；升级复用同一机制（P1）。';
+      }
+      return;
+    }
+  });
+})();
+</script>
+</div>

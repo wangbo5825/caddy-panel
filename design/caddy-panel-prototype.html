@@ -1,0 +1,1196 @@
+<div id="caddy-panel-prototype">
+<style>
+#caddy-panel-prototype{
+  --cp-bg: light-dark(#eef1f6, #0d1117);
+  --cp-surface: light-dark(#ffffff, #161c24);
+  --cp-surface-2: light-dark(#f5f7fa, #1c242f);
+  --cp-border: light-dark(#dde3ec, #2b3542);
+  --cp-text: light-dark(#1b2734, #e4eaf2);
+  --cp-muted: light-dark(#5b6b7c, #94a3b4);
+  --cp-primary: light-dark(#1d63ed, #5c93ff);
+  --cp-primary-fg: light-dark(#ffffff, #0c1522);
+  --cp-green: light-dark(#16803c, #3fbe6b);
+  --cp-red: light-dark(#c43535, #ff6d6d);
+  --cp-amber: light-dark(#9a6207, #e9b44c);
+  --cp-code: light-dark(#f6f8fb, #10151d);
+  font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--cp-text);
+}
+#caddy-panel-prototype *{ box-sizing: border-box; }
+#caddy-panel-prototype .cp-app{
+  display: flex;
+  min-height: 600px;
+  background: var(--cp-bg);
+  border: 1px solid var(--cp-border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+#caddy-panel-prototype .cp-sidebar{
+  width: 216px;
+  flex: none;
+  background: var(--cp-surface);
+  border-right: 1px solid var(--cp-border);
+  display: flex;
+  flex-direction: column;
+  padding: 14px 10px;
+  gap: 12px;
+}
+#caddy-panel-prototype .cp-brand{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  font-size: 15px;
+  padding: 2px 8px 10px;
+  border-bottom: 1px solid var(--cp-border);
+}
+#caddy-panel-prototype .cp-logo{
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  background: var(--cp-primary);
+  color: var(--cp-primary-fg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+}
+#caddy-panel-prototype .cp-nav{ display: flex; flex-direction: column; gap: 2px; }
+#caddy-panel-prototype .cp-nav-item{
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--cp-muted);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+#caddy-panel-prototype .cp-nav-item:hover{ background: var(--cp-surface-2); color: var(--cp-text); }
+#caddy-panel-prototype .cp-nav-item.is-active{ background: var(--cp-surface-2); color: var(--cp-primary); font-weight: 500; }
+#caddy-panel-prototype .cp-nav-item i{ width: 16px; height: 16px; flex: none; }
+#caddy-panel-prototype .cp-sidebar-foot{
+  margin-top: auto;
+  padding: 10px 10px 2px;
+  border-top: 1px solid var(--cp-border);
+  font-size: 12.5px;
+}
+#caddy-panel-prototype .cp-instance{ display: flex; align-items: center; gap: 7px; color: var(--cp-text); font-weight: 500; }
+#caddy-panel-prototype .cp-instance-sub{ color: var(--cp-muted); margin-top: 2px; }
+#caddy-panel-prototype .cp-dot{ width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+#caddy-panel-prototype .cp-dot-green{ background: var(--cp-green); }
+#caddy-panel-prototype .cp-dot-amber{ background: var(--cp-amber); }
+#caddy-panel-prototype .cp-dot-red{ background: var(--cp-red); }
+#caddy-panel-prototype .cp-main{ flex: 1; min-width: 0; display: flex; flex-direction: column; }
+#caddy-panel-prototype .cp-topbar{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 20px;
+  background: var(--cp-surface);
+  border-bottom: 1px solid var(--cp-border);
+}
+#caddy-panel-prototype .cp-topbar-title{ margin: 0; font-size: 16px; font-weight: 500; }
+#caddy-panel-prototype .cp-topbar-right{ display: flex; align-items: center; gap: 12px; }
+#caddy-panel-prototype .cp-user{ display: flex; align-items: center; gap: 8px; color: var(--cp-text); font-size: 13px; }
+#caddy-panel-prototype .cp-avatar{
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--cp-primary); color: var(--cp-primary-fg);
+  display: inline-flex; align-items: center; justify-content: center; font-size: 12px;
+}
+#caddy-panel-prototype .cp-content{ padding: 20px; display: flex; flex-direction: column; gap: 16px; overflow: auto; }
+#caddy-panel-prototype .cp-page{ display: none; flex-direction: column; gap: 16px; }
+#caddy-panel-prototype .cp-page.is-active{ display: flex; }
+#caddy-panel-prototype .cp-card{
+  background: var(--cp-surface);
+  border: 1px solid var(--cp-border);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+#caddy-panel-prototype .cp-card-title{ font-weight: 500; font-size: 14px; }
+#caddy-panel-prototype .cp-stat-grid{ display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+#caddy-panel-prototype .cp-stat-label{ color: var(--cp-muted); font-size: 12.5px; }
+#caddy-panel-prototype .cp-stat-value{ font-size: 22px; font-weight: 500; line-height: 1.25; }
+#caddy-panel-prototype .cp-stat-hint{ color: var(--cp-muted); font-size: 12px; }
+#caddy-panel-prototype .cp-amber{ color: var(--cp-amber); }
+#caddy-panel-prototype .cp-red{ color: var(--cp-red); }
+#caddy-panel-prototype .cp-btn-row{ display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+#caddy-panel-prototype .cp-btn{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: 1px solid var(--cp-border);
+  border-radius: 8px;
+  background: var(--cp-surface);
+  color: var(--cp-text);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+#caddy-panel-prototype .cp-btn:hover{ background: var(--cp-surface-2); }
+#caddy-panel-prototype .cp-btn-primary{ background: var(--cp-primary); border-color: var(--cp-primary); color: var(--cp-primary-fg); }
+#caddy-panel-prototype .cp-btn-primary:hover{ opacity: .92; }
+#caddy-panel-prototype .cp-btn-ghost{ border-color: transparent; background: transparent; color: var(--cp-primary); }
+#caddy-panel-prototype .cp-table-wrap{ overflow-x: auto; }
+#caddy-panel-prototype .cp-table{ width: 100%; border-collapse: collapse; font-size: 13px; }
+#caddy-panel-prototype .cp-table th{
+  text-align: left; color: var(--cp-muted); font-weight: 500;
+  padding: 8px 10px; border-bottom: 1px solid var(--cp-border); white-space: nowrap;
+}
+#caddy-panel-prototype .cp-table td{ padding: 10px; border-bottom: 1px solid var(--cp-border); vertical-align: middle; }
+#caddy-panel-prototype .cp-table tr:last-child td{ border-bottom: 0; }
+#caddy-panel-prototype .cp-strong{ font-weight: 500; }
+#caddy-panel-prototype .cp-text-muted{ color: var(--cp-muted); font-size: 12.5px; }
+#caddy-panel-prototype .cp-pill{
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 2px 9px; border-radius: 999px;
+  background: var(--cp-surface-2); color: var(--cp-muted);
+  font-size: 12px; white-space: nowrap;
+}
+#caddy-panel-prototype .cp-pill-green{ background: color-mix(in srgb, var(--cp-green) 14%, transparent); color: var(--cp-green); }
+#caddy-panel-prototype .cp-pill-amber{ background: color-mix(in srgb, var(--cp-amber) 16%, transparent); color: var(--cp-amber); }
+#caddy-panel-prototype .cp-pill-red{ background: color-mix(in srgb, var(--cp-red) 14%, transparent); color: var(--cp-red); }
+#caddy-panel-prototype .cp-actions{ display: flex; gap: 6px; }
+#caddy-panel-prototype .cp-switch{ position: relative; display: inline-flex; align-items: center; cursor: pointer; }
+#caddy-panel-prototype .cp-switch input{ position: absolute; opacity: 0; width: 0; height: 0; }
+#caddy-panel-prototype .cp-switch-track{
+  width: 34px; height: 19px; border-radius: 999px;
+  background: var(--cp-border); transition: background .15s;
+}
+#caddy-panel-prototype .cp-switch-track::after{
+  content: ""; position: absolute; top: 2px; left: 2px;
+  width: 15px; height: 15px; border-radius: 50%; background: #fff;
+  transition: left .15s;
+}
+#caddy-panel-prototype .cp-switch input:checked + .cp-switch-track{ background: var(--cp-primary); }
+#caddy-panel-prototype .cp-switch input:checked + .cp-switch-track::after{ left: 17px; }
+#caddy-panel-prototype .cp-inline-switch{ display: inline-flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; }
+#caddy-panel-prototype .cp-form{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; }
+#caddy-panel-prototype .cp-field{ display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+#caddy-panel-prototype .cp-field-wide{ grid-column: 1 / -1; }
+#caddy-panel-prototype .cp-field[hidden], #caddy-panel-prototype .cp-raw-block[hidden], #caddy-panel-prototype .cp-notice[hidden], #caddy-panel-prototype .cp-import-panel[hidden]{ display: none; }
+#caddy-panel-prototype .cp-label{ font-size: 12.5px; color: var(--cp-muted); }
+#caddy-panel-prototype .cp-input, #caddy-panel-prototype .cp-select{
+  padding: 7px 10px;
+  border: 1px solid var(--cp-border);
+  border-radius: 8px;
+  background: var(--cp-surface-2);
+  color: var(--cp-text);
+  font: inherit;
+  font-size: 13px;
+  min-width: 0;
+}
+#caddy-panel-prototype .cp-input:disabled, #caddy-panel-prototype .cp-select:disabled{ opacity: .55; }
+#caddy-panel-prototype .cp-upstream-row{ display: flex; gap: 8px; align-items: center; }
+#caddy-panel-prototype .cp-editor{
+  background: var(--cp-code);
+  border: 1px solid var(--cp-border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-family: ui-monospace, Consolas, "Cascadia Mono", monospace;
+  font-size: 12.5px;
+  line-height: 1.6;
+  white-space: pre;
+  overflow-x: auto;
+}
+#caddy-panel-prototype .cp-notice{
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  border: 1px solid var(--cp-border);
+  background: var(--cp-surface-2);
+}
+#caddy-panel-prototype .cp-notice-success{ border-color: color-mix(in srgb, var(--cp-green) 40%, transparent); background: color-mix(in srgb, var(--cp-green) 10%, transparent); color: var(--cp-green); }
+#caddy-panel-prototype .cp-notice-error{ border-color: color-mix(in srgb, var(--cp-red) 45%, transparent); background: color-mix(in srgb, var(--cp-red) 10%, transparent); color: var(--cp-red); }
+#caddy-panel-prototype .cp-notice-amber{ border-color: color-mix(in srgb, var(--cp-amber) 45%, transparent); background: color-mix(in srgb, var(--cp-amber) 12%, transparent); color: var(--cp-amber); }
+#caddy-panel-prototype .cp-json{
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  background: var(--cp-code);
+  border-radius: 6px;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 12px;
+  white-space: pre;
+  overflow-x: auto;
+}
+#caddy-panel-prototype .cp-filter-bar{ display: flex; flex-wrap: wrap; gap: 10px; align-items: end; }
+#caddy-panel-prototype .cp-log-line{ font-family: ui-monospace, Consolas, monospace; font-size: 12px; padding: 5px 2px; border-bottom: 1px solid var(--cp-border); white-space: pre-wrap; word-break: break-all; }
+#caddy-panel-prototype .cp-log-line:last-child{ border-bottom: 0; }
+#caddy-panel-prototype .cp-log-time{ color: var(--cp-muted); }
+#caddy-panel-prototype .cp-log-ok{ color: var(--cp-green); }
+#caddy-panel-prototype .cp-log-warn{ color: var(--cp-amber); }
+#caddy-panel-prototype .cp-log-err{ color: var(--cp-red); }
+#caddy-panel-prototype .cp-token{ font-family: ui-monospace, Consolas, monospace; font-size: 12px; background: var(--cp-code); border: 1px dashed var(--cp-border); border-radius: 6px; padding: 8px 10px; word-break: break-all; }
+#caddy-panel-prototype .cp-bar{ height: 8px; border-radius: 999px; background: var(--cp-border); overflow: hidden; min-width: 80px; }
+#caddy-panel-prototype .cp-bar-fill{ height: 100%; border-radius: 999px; background: var(--cp-primary); }
+#caddy-panel-prototype .cp-bar-fill.cp-bar-green{ background: var(--cp-green); }
+#caddy-panel-prototype .cp-bar-fill.cp-bar-amber{ background: var(--cp-amber); }
+#caddy-panel-prototype .cp-bar-fill.cp-bar-red{ background: var(--cp-red); }
+#caddy-panel-prototype .cp-progress-cell{ display: flex; align-items: center; gap: 8px; }
+#caddy-panel-prototype .cp-page-head{ display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+#caddy-panel-prototype .cp-actions-end{ justify-content: flex-end; }
+@media (max-width: 760px){
+  #caddy-panel-prototype .cp-app{ flex-direction: column; }
+  #caddy-panel-prototype .cp-sidebar{ width: 100%; flex-direction: row; align-items: center; padding: 8px 10px; border-right: 0; border-bottom: 1px solid var(--cp-border); overflow-x: auto; }
+  #caddy-panel-prototype .cp-brand{ border-bottom: 0; padding: 0 8px 0 2px; flex: none; }
+  #caddy-panel-prototype .cp-nav{ flex-direction: row; gap: 2px; }
+  #caddy-panel-prototype .cp-nav-item{ width: auto; white-space: nowrap; }
+  #caddy-panel-prototype .cp-sidebar-foot{ display: none; }
+  #caddy-panel-prototype .cp-content{ padding: 14px; }
+  #caddy-panel-prototype .cp-stat-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #caddy-panel-prototype .cp-form{ grid-template-columns: 1fr; }
+  #caddy-panel-prototype .cp-field-wide{ grid-column: auto; }
+  #caddy-panel-prototype .cp-topbar{ flex-wrap: wrap; }
+}
+#caddy-panel-prototype .cp-overlay{ position: fixed; inset: 0; background: rgba(10,14,20,.55); display: flex; align-items: center; justify-content: center; z-index: 50; }
+#caddy-panel-prototype .cp-overlay-card{ width: 430px; max-width: calc(100vw - 32px); background: var(--cp-surface); border: 1px solid var(--cp-border); border-radius: 14px; padding: 18px; box-shadow: 0 20px 50px rgba(0,0,0,.28); }
+#caddy-panel-prototype .cp-overlay-head{ display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+#caddy-panel-prototype .cp-tabs{ display: flex; gap: 6px; margin-bottom: 14px; }
+#caddy-panel-prototype .cp-tab{ border: 1px solid var(--cp-border); background: var(--cp-surface); color: var(--cp-muted); border-radius: 8px; padding: 6px 12px; font: inherit; cursor: pointer; }
+#caddy-panel-prototype .cp-tab.is-active{ background: var(--cp-primary); border-color: var(--cp-primary); color: var(--cp-primary-fg); }
+#caddy-panel-prototype code{ font-family: ui-monospace, Consolas, monospace; font-size: 12px; background: var(--cp-code); border: 1px solid var(--cp-border); border-radius: 5px; padding: 1px 5px; }
+#caddy-panel-prototype .cp-warn{ display: flex; gap: 8px; align-items: flex-start; font-size: 13px; border-radius: 8px; padding: 9px 11px; margin-top: 10px; background: rgba(233,180,76,.12); border: 1px solid rgba(233,180,76,.45); color: var(--cp-amber); }
+</style>
+
+<div class="cp-app">
+  <aside class="cp-sidebar">
+    <div class="cp-brand"><span class="cp-logo">⌂</span> caddy-panel</div>
+    <nav class="cp-nav" aria-label="主导航">
+      <button type="button" class="cp-nav-item is-active" data-page="dashboard" data-title="仪表盘" aria-current="page"><i data-lucide="layout-dashboard" aria-hidden="true"></i><span>仪表盘</span></button>
+      <button type="button" class="cp-nav-item" data-page="sites" data-title="站点管理"><i data-lucide="globe" aria-hidden="true"></i><span>站点管理</span></button>
+      <button type="button" class="cp-nav-item" data-page="access" data-title="访问控制"><i data-lucide="shield" aria-hidden="true"></i><span>访问控制</span></button>
+      <button type="button" class="cp-nav-item" data-page="caddyfile" data-title="Caddyfile"><i data-lucide="file-code-2" aria-hidden="true"></i><span>Caddyfile</span></button>
+      <button type="button" class="cp-nav-item" data-page="certificates" data-title="证书"><i data-lucide="award" aria-hidden="true"></i><span>证书</span></button>
+      <button type="button" class="cp-nav-item" data-page="logs" data-title="日志"><i data-lucide="scroll-text" aria-hidden="true"></i><span>日志</span></button>
+      <button type="button" class="cp-nav-item" data-page="security" data-title="安全分析"><i data-lucide="radar" aria-hidden="true"></i><span>安全分析</span></button>
+      <button type="button" class="cp-nav-item" data-page="storage" data-title="存储"><i data-lucide="hard-drive" aria-hidden="true"></i><span>存储</span></button>
+      <button type="button" class="cp-nav-item" data-page="backups" data-title="备份"><i data-lucide="archive" aria-hidden="true"></i><span>备份</span></button>
+      <button type="button" class="cp-nav-item" data-page="settings" data-title="设置"><i data-lucide="settings" aria-hidden="true"></i><span>设置</span></button>
+    </nav>
+    <div class="cp-sidebar-foot">
+      <div class="cp-instance"><span class="cp-dot cp-dot-green"></span> Caddy 运行中</div>
+      <div class="cp-instance-sub">Admin API 127.0.0.1:2019</div>
+      <button type="button" class="cp-btn cp-btn-ghost" data-login-preview style="margin-top:8px">远程登录 / 初始化预览</button>
+    </div>
+  </aside>
+
+  <div class="cp-main">
+    <header class="cp-topbar">
+      <h1 class="cp-topbar-title">仪表盘</h1>
+      <div class="cp-topbar-right">
+        <span class="cp-pill cp-pill-green"><span class="cp-dot cp-dot-green"></span>运行中</span>
+        <span class="cp-user"><span class="cp-avatar">本</span> 本地管理员</span>
+      </div>
+    </header>
+
+    <main class="cp-content">
+
+      <div class="cp-page is-active" data-page="dashboard">
+        <div class="cp-stat-grid">
+          <div class="cp-card"><div class="cp-stat-label">Caddy 实例</div><div class="cp-stat-value">运行中</div><div class="cp-stat-hint">Admin API 正常 · 配置 2 分钟前加载</div></div>
+          <div class="cp-card"><div class="cp-stat-label">站点</div><div class="cp-stat-value">3</div><div class="cp-stat-hint">2 个启用 · 1 个停用</div></div>
+          <div class="cp-card"><div class="cp-stat-label">证书</div><div class="cp-stat-value">4</div><div class="cp-stat-hint cp-amber">1 个 7 天内到期</div></div>
+          <div class="cp-card"><div class="cp-stat-label">磁盘空间</div><div class="cp-stat-value">62%</div><div class="cp-stat-hint">120GB · 日志 1.2GB · 备份 3.4GB</div></div>
+        </div>
+        <div class="cp-card">
+          <div class="cp-card-title">快捷操作</div>
+          <div class="cp-btn-row">
+            <button type="button" class="cp-btn cp-btn-primary" data-new-site>新建站点</button>
+            <button type="button" class="cp-btn" data-goto="caddyfile">编辑 Caddyfile</button>
+            <button type="button" class="cp-btn" data-cert-import>导入证书</button>
+            <button type="button" class="cp-btn" data-goto="logs">查看日志</button>
+          </div>
+        </div>
+        <div class="cp-card">
+          <div class="cp-card-title">最近审计</div>
+          <div class="cp-table-wrap">
+            <table class="cp-table">
+              <thead><tr><th>时间</th><th>操作</th><th>对象</th><th>结果</th></tr></thead>
+              <tbody>
+                <tr><td>21:38</td><td>保存并应用</td><td>Caddyfile（全局）</td><td><span class="cp-pill cp-pill-green">成功</span></td></tr>
+                <tr><td>21:05</td><td>更新站点</td><td>api.example.test</td><td><span class="cp-pill cp-pill-green">成功</span></td></tr>
+                <tr><td>20:12</td><td>登录</td><td>本地管理员（免认证）</td><td><span class="cp-pill cp-pill-green">成功</span></td></tr>
+                <tr><td>19:40</td><td>校验失败</td><td>站点 www.example.test</td><td><span class="cp-pill cp-pill-red">已回滚</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="cp-page" data-page="sites">
+        <div class="cp-page-head">
+          <div>
+            <div class="cp-card-title">站点（3）</div>
+            <div class="cp-text-muted">片段保存在 etc/caddy.d/，保存后自动校验并热加载</div>
+          </div>
+          <button type="button" class="cp-btn cp-btn-primary" data-new-site><i data-lucide="plus" aria-hidden="true"></i> 新建站点</button>
+        </div>
+        <div class="cp-card">
+          <div class="cp-table-wrap">
+            <table class="cp-table">
+              <thead><tr><th>名称</th><th>域名</th><th>形态</th><th>TLS</th><th>启用</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><span class="cp-strong">api</span></td>
+                  <td>api.example.test</td>
+                  <td><span class="cp-pill">反向代理</span></td>
+                  <td>自动</td>
+                  <td><label class="cp-switch"><input type="checkbox" checked><span class="cp-switch-track"></span></label></td>
+                  <td><div class="cp-actions">
+                    <button type="button" class="cp-btn cp-btn-ghost" data-edit-site="api" data-domain="api.example.test" data-mode="proxy">编辑</button>
+                    <button type="button" class="cp-btn cp-btn-ghost" data-edit-site="api" data-domain="api.example.test" data-mode="proxy" data-advanced>高级</button>
+                  </div></td>
+                </tr>
+                <tr>
+                  <td><span class="cp-strong">www</span></td>
+                  <td>www.example.test</td>
+                  <td><span class="cp-pill">PHP 应用</span></td>
+                  <td>自动</td>
+                  <td><label class="cp-switch"><input type="checkbox" checked><span class="cp-switch-track"></span></label></td>
+                  <td><div class="cp-actions">
+                    <button type="button" class="cp-btn cp-btn-ghost" data-edit-site="www" data-domain="www.example.test" data-mode="php">编辑</button>
+                    <button type="button" class="cp-btn cp-btn-ghost" data-edit-site="www" data-domain="www.example.test" data-mode="php" data-advanced>高级</button>
+                  </div></td>
+                </tr>
+                <tr>
+                  <td><span class="cp-strong">static</span></td>
+                  <td>static.example.test</td>
+                  <td><span class="cp-pill">静态文件</span></td>
+                  <td>关闭</td>
+                  <td><label class="cp-switch"><input type="checkbox"><span class="cp-switch-track"></span></label></td>
+                  <td><div class="cp-actions">
+                    <button type="button" class="cp-btn cp-btn-ghost" data-edit-site="static" data-domain="static.example.test" data-mode="static">编辑</button>
+                    <button type="button" class="cp-btn cp-btn-ghost" data-edit-site="static" data-domain="static.example.test" data-mode="static" data-advanced>高级</button>
+                  </div></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="cp-page" data-page="site-editor">
+        <div><button type="button" class="cp-btn cp-btn-ghost" data-goto="sites">← 返回站点列表</button></div>
+        <div class="cp-page-head">
+          <div>
+            <div class="cp-card-title" data-editor-title>编辑站点：api.example.test</div>
+            <div class="cp-text-muted">修改保存后将重建片段，经 Caddy Admin API 校验并热加载</div>
+          </div>
+          <label class="cp-inline-switch"><input type="checkbox" data-advanced-toggle><span>高级模式（编辑原始块）</span></label>
+        </div>
+        <div class="cp-card">
+          <div class="cp-text-muted" data-mode-note>表单模式：编辑字段生成 Caddyfile 片段</div>
+          <div class="cp-form" data-form-fields>
+            <div class="cp-field"><label class="cp-label" for="cp-name">名称</label><input class="cp-input" id="cp-name" value="api" data-name></div>
+            <div class="cp-field"><label class="cp-label" for="cp-domain">域名（可多个）</label><input class="cp-input" id="cp-domain" value="api.example.test" data-domain-input><span class="cp-text-muted">+ 添加域名</span></div>
+            <div class="cp-field"><label class="cp-label" for="cp-mode">形态</label><select class="cp-select" id="cp-mode" data-site-mode><option value="proxy">反向代理</option><option value="static">静态文件服务</option><option value="php">PHP 应用（FRAMPP）</option></select></div>
+            <div class="cp-field"><label class="cp-label" for="cp-listen">监听地址</label><input class="cp-input" id="cp-listen" value=":443"></div>
+            <div class="cp-field"><label class="cp-label">自动 HTTPS</label><label class="cp-switch"><input type="checkbox" checked><span class="cp-switch-track"></span></label></div>
+            <div class="cp-field" data-for="proxy"><label class="cp-label">负载均衡策略</label><select class="cp-select"><option>round_robin</option><option>least_conn</option><option>random</option><option>ip_hash</option></select></div>
+            <div class="cp-field" data-for="proxy"><label class="cp-label">WebSocket</label><label class="cp-switch"><input type="checkbox" checked><span class="cp-switch-track"></span></label></div>
+            <div class="cp-field cp-field-wide" data-for="proxy"><label class="cp-label">上游（多 upstream）</label>
+              <div class="cp-upstream-row"><input class="cp-input" value="127.0.0.1:9000" style="flex:1"><button type="button" class="cp-btn cp-btn-ghost">删除</button></div>
+              <div class="cp-upstream-row"><input class="cp-input" value="127.0.0.1:9001" style="flex:1"><button type="button" class="cp-btn cp-btn-ghost">删除</button></div>
+              <button type="button" class="cp-btn cp-btn-ghost" style="justify-self:start">+ 添加上游</button>
+            </div>
+            <div class="cp-field" data-for="static php"><label class="cp-label" for="cp-root">根目录</label><input class="cp-input" id="cp-root" value="htdocs/www"></div>
+            <div class="cp-field" data-for="php"><label class="cp-label">PHP 运行</label><span class="cp-pill cp-pill-green">php_server（检测到 FrankenPHP）</span></div>
+            <div class="cp-field"><label class="cp-label" for="cp-timeout">超时</label><input class="cp-input" id="cp-timeout" value="30s"></div>
+            <div class="cp-field cp-field-wide"><label class="cp-label">请求头</label>
+              <div class="cp-upstream-row"><input class="cp-input" value="X-Forwarded-Prefix /api" style="flex:1"><button type="button" class="cp-btn cp-btn-ghost">删除</button></div>
+              <button type="button" class="cp-btn cp-btn-ghost" style="justify-self:start">+ 添加请求头</button>
+            </div>
+            <div class="cp-field cp-field-wide"><label class="cp-label" for="cp-rewrite">路径重写</label><input class="cp-input" id="cp-rewrite" value="/api/* → /"></div>
+          </div>
+          <div class="cp-raw-block" hidden>
+            <div class="cp-editor" data-raw-editor>api.example.test {
+    reverse_proxy 127.0.0.1:9000 127.0.0.1:9001 {
+        lb_policy round_robin
+        health_uri /health
+    }
+    header {
+        X-Forwarded-Prefix /api
+    }
+}</div>
+            <div class="cp-text-muted">高级模式：表单字段锁定，直接编辑该站点原始 Caddyfile 块；保存仍执行校验。</div>
+          </div>
+          <div class="cp-notice" data-editor-notice role="status" aria-live="polite" hidden></div>
+          <div class="cp-btn-row cp-actions-end">
+            <button type="button" class="cp-btn" data-editor-check>检查但不应用</button>
+            <button type="button" class="cp-btn cp-btn-primary" data-editor-save>保存并应用</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="cp-page" data-page="access">
+        <div class="cp-page-head">
+          <div>
+            <div class="cp-card-title">访问控制</div>
+            <div class="cp-text-muted">规则写入 etc/access-filter.rules，保存后热重载</div>
+          </div>
+          <span class="cp-pill cp-pill-green"><span class="cp-dot cp-dot-green"></span>caddy-access-filter v1.2.0</span>
+        </div>
+        <div class="cp-card">
+          <div class="cp-table-wrap">
+            <table class="cp-table">
+              <thead><tr><th>类型</th><th>值</th><th>动作</th><th>作用域</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>IP</td><td>127.0.0.1</td><td><span class="cp-pill cp-pill-green">允许</span></td><td>全局</td><td><button type="button" class="cp-btn cp-btn-ghost">删除</button></td></tr>
+                <tr><td>CIDR</td><td>10.0.0.0/8</td><td><span class="cp-pill cp-pill-green">允许</span></td><td>全局</td><td><button type="button" class="cp-btn cp-btn-ghost">删除</button></td></tr>
+                <tr><td>国家码</td><td>CN</td><td><span class="cp-pill cp-pill-red">拒绝</span></td><td>站点：api</td><td><button type="button" class="cp-btn cp-btn-ghost">删除</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="cp-card">
+          <div class="cp-card-title">黑名单（来源：手动 / 安全分析一键加入）</div>
+          <div class="cp-text-muted">安全分析页点击“加入黑名单”后自动写入此处，并热重载 access-filter 规则</div>
+          <div class="cp-table-wrap">
+            <table class="cp-table">
+              <thead><tr><th>IP / CIDR</th><th>来源</th><th>作用域</th><th>有效期</th><th>状态</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>185.220.101.34</td><td><span class="cp-pill">安全分析</span></td><td>全局</td><td>剩余 23 小时</td><td><span class="cp-pill cp-pill-green">启用</span></td><td><div class="cp-actions"><button type="button" class="cp-btn cp-btn-ghost" data-blacklist-toggle>停用</button><button type="button" class="cp-btn cp-btn-ghost" data-blacklist-remove>删除</button></div></td></tr>
+                <tr><td>45.155.205.12</td><td><span class="cp-pill">安全分析</span></td><td>站点：api</td><td>剩余 6 天</td><td><span class="cp-pill cp-pill-green">启用</span></td><td><div class="cp-actions"><button type="button" class="cp-btn cp-btn-ghost" data-blacklist-toggle>停用</button><button type="button" class="cp-btn cp-btn-ghost" data-blacklist-remove>删除</button></div></td></tr>
+                <tr><td>192.168.0.99</td><td><span class="cp-pill">手动</span></td><td>全局</td><td>永久</td><td><span class="cp-pill">停用</span></td><td><div class="cp-actions"><button type="button" class="cp-btn cp-btn-ghost" data-blacklist-toggle>启用</button><button type="button" class="cp-btn cp-btn-ghost" data-blacklist-remove>删除</button></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="cp-card-title">手动添加黑名单</div>
+          <div class="cp-form">
+            <div class="cp-field"><label class="cp-label" for="cp-bl-ip">IP / CIDR</label><input class="cp-input" id="cp-bl-ip" placeholder="例如 203.0.113.5 或 203.0.113.0/24"></div>
+            <div class="cp-field"><label class="cp-label" for="cp-bl-scope">作用域</label><select class="cp-select" id="cp-bl-scope"><option>全局</option><option>站点：api</option><option>站点：www</option></select></div>
+            <div class="cp-field"><label class="cp-label" for="cp-bl-expire">有效期</label><select class="cp-select" id="cp-bl-expire"><option>24 小时</option><option>7 天</option><option>永久</option></select></div>
+            <div class="cp-field"><label class="cp-label" for="cp-bl-reason">原因</label><input class="cp-input" id="cp-bl-reason" placeholder="可选备注"></div>
+          </div>
+          <div class="cp-btn-row"><button type="button" class="cp-btn cp-btn-primary" data-blacklist-add>添加黑名单</button></div>
+          <div class="cp-notice" data-blacklist-notice role="status" aria-live="polite" hidden></div>
+        </div>
+        <div class="cp-card">
+          <div class="cp-card-title">添加规则</div>
+          <div class="cp-form">
+            <div class="cp-field"><label class="cp-label" for="cp-ac-type">类型</label><select class="cp-select" id="cp-ac-type"><option>IP</option><option>CIDR</option><option>国家码</option></select></div>
+            <div class="cp-field"><label class="cp-label" for="cp-ac-value">值</label><input class="cp-input" id="cp-ac-value" placeholder="例如 192.168.1.0/24"></div>
+            <div class="cp-field"><label class="cp-label" for="cp-ac-action">动作</label><select class="cp-select" id="cp-ac-action"><option>允许</option><option>拒绝</option></select></div>
+            <div class="cp-field"><label class="cp-label" for="cp-ac-scope">作用域</label><select class="cp-select" id="cp-ac-scope"><option>全局</option><option>站点：api</option><option>站点：www</option></select></div>
+          </div>
+          <div class="cp-btn-row"><button type="button" class="cp-btn cp-btn-primary" data-access-add>添加规则</button></div>
+          <div class="cp-notice" data-access-notice role="status" aria-live="polite" hidden></div>
+        </div>
+      </div>
+
+      <div class="cp-page" data-page="caddyfile">
+        <div class="cp-page-head">
+          <div>
+            <div class="cp-card-title">Caddyfile</div>
+            <div class="cp-text-muted">自动组装模式：全局配置段 + import caddy.d/*.caddy</div>
+          </div>
+          <div class="cp-btn-row">
+            <button type="button" class="cp-btn" data-cf-check>检查但不应用</button>
+            <button type="button" class="cp-btn cp-btn-primary" data-cf-save>保存并应用</button>
+            <button type="button" class="cp-btn cp-btn-ghost" data-cf-custom>切换完全自定义模式</button>
+          </div>
+        </div>
+        <div class="cp-card">
+          <div class="cp-editor" data-cf-editor>{
+    email admin@example.test
+    admin 127.0.0.1:2019
+    auto_https disable_redirects
+}
+
+import caddy.d/*.caddy</div>
+          <div class="cp-notice cp-notice-success" data-cf-ok role="status" aria-live="polite" hidden>
+            适配成功 · 未加载（可继续编辑或保存并应用）
+            <div class="cp-json">{
+  "apps": {
+    "http": {
+      "servers": {
+        "srv0": {
+          "listen": [":80", ":443"],
+          "routes": [ ... ]
+        }
+      }
+    }
+  }
+}</div>
+          </div>
+          <div class="cp-notice cp-notice-error" data-cf-err role="alert" hidden>
+            <strong>Caddyfile:8:3</strong> 站点块地址无效：expected an address or matcher token
+            <div class="cp-text-muted">校验未通过，当前配置保持运行，未发生任何变更。</div>
+          </div>
+          <div class="cp-notice cp-notice-amber" data-cf-custom-notice role="status" aria-live="polite" hidden>
+            已切换完全自定义模式：站点列表转为只读，面板仅保留该文件的编辑、校验与加载。
+          </div>
+          <div class="cp-btn-row"><button type="button" class="cp-btn cp-btn-ghost" data-cf-fail>演示：校验失败</button></div>
+        </div>
+      </div>
+
+      <div class="cp-page" data-page="certificates">
+        <div class="cp-page-head">
+          <div>
+            <div class="cp-card-title">证书</div>
+            <div class="cp-text-muted">签发与续期由 Caddy 自动管理；此处查看与手动导入</div>
+          </div>
+          <button type="button" class="cp-btn cp-btn-primary" data-cert-import><i data-lucide="upload" aria-hidden="true"></i> 导入证书</button>
+        </div>
+        <div class="cp-notice cp-notice-amber" role="status">1 个证书 7 天内到期，Caddy 将自动续期（HTTP-01 可用时）</div>
+        <div class="cp-card">
+          <div class="cp-table-wrap">
+            <table class="cp-table">
+              <thead><tr><th>域名</th><th>来源</th><th>Issuer</th><th>签发时间</th><th>到期时间</th><th>状态</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>api.example.test</td><td>自动（ACME）</td><td>Let's Encrypt</td><td>2026-06-01</td><td>2026-08-30</td><td><span class="cp-pill cp-pill-amber">即将到期</span></td><td><button type="button" class="cp-btn cp-btn-ghost">更换</button></td></tr>
+                <tr><td>www.example.test</td><td>自动（ACME）</td><td>Let's Encrypt</td><td>2026-07-20</td><td>2026-10-18</td><td><span class="cp-pill cp-pill-green">正常</span></td><td><button type="button" class="cp-btn cp-btn-ghost">更换</button></td></tr>
+                <tr><td>static.example.test</td><td>本地 CA</td><td>Caddy Local Authority</td><td>2026-08-01</td><td>2027-07-31</td><td><span class="cp-pill cp-pill-green">正常</span></td><td><button type="button" class="cp-btn cp-btn-ghost">更换</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="cp-card cp-import-panel" data-cert-panel hidden>
+          <div class="cp-card-title">导入 / 更换证书</div>
+          <div class="cp-form">
+            <div class="cp-field"><label class="cp-label" for="cp-cert-site">应用到站点</label><select class="cp-select" id="cp-cert-site"><option>api.example.test</option><option>www.example.test</option><option>static.example.test</option></select></div>
+            <div class="cp-field"><label class="cp-label" for="cp-cert-crt">证书 PEM</label><input class="cp-input" id="cp-cert-crt" type="file"></div>
+            <div class="cp-field"><label class="cp-label" for="cp-cert-key">私钥 PEM</label><input class="cp-input" id="cp-cert-key" type="file"></div>
+          </div>
+          <div class="cp-text-muted">导入后该站点将从自动证书切换为手动证书；可随时“还原 Caddy 自动证书”。</div>
+          <div class="cp-btn-row">
+            <button type="button" class="cp-btn" data-cert-cancel>取消</button>
+            <button type="button" class="cp-btn cp-btn-primary" data-cert-confirm>导入</button>
+          </div>
+        </div>
+        <div class="cp-notice" data-cert-notice role="status" aria-live="polite" hidden></div>
+      </div>
+
+      <div class="cp-page" data-page="logs">
+        <div class="cp-page-head">
+          <div>
+            <div class="cp-card-title">日志</div>
+            <div class="cp-text-muted">Caddy 结构化访问日志（JSON），本地文件实时 tail</div>
+          </div>
+          <label class="cp-inline-switch"><input type="checkbox" data-log-autorefresh checked><span>自动刷新</span></label>
+        </div>
+        <div class="cp-card">
+          <div class="cp-filter-bar">
+            <div class="cp-field"><label class="cp-label" for="cp-log-range">时间范围</label><select class="cp-select" id="cp-log-range"><option>最近 15 分钟</option><option>最近 1 小时</option><option>今天</option></select></div>
+            <div class="cp-field"><label class="cp-label" for="cp-log-domain">域名</label><input class="cp-input" id="cp-log-domain" placeholder="例如 api.example.test"></div>
+            <div class="cp-field"><label class="cp-label" for="cp-log-status">状态码</label><input class="cp-input" id="cp-log-status" placeholder="例如 502"></div>
+            <div class="cp-field"><label class="cp-label">仅错误</label><label class="cp-switch"><input type="checkbox"><span class="cp-switch-track"></span></label></div>
+          </div>
+          <div class="cp-notice" data-log-notice role="status" aria-live="polite" hidden></div>
+          <div>
+            <div class="cp-log-line"><span class="cp-log-time">21:40:12.123</span> <span class="cp-log-ok">200</span> GET /api/users · 127.0.0.1 · 12ms</div>
+            <div class="cp-log-line"><span class="cp-log-time">21:40:11.089</span> <span class="cp-log-warn">502</span> GET /api/gateway · 10.0.0.2 · 1203ms</div>
+            <div class="cp-log-line"><span class="cp-log-time">21:40:09.512</span> <span class="cp-log-ok">304</span> GET /assets/app.js · 127.0.0.1 · 3ms</div>
+            <div class="cp-log-line"><span class="cp-log-time">21:40:05.204</span> <span class="cp-log-err">500</span> GET /api/report · 127.0.0.1 · 84ms</div>
+            <div class="cp-log-line"><span class="cp-log-time">21:40:01.770</span> <span class="cp-log-ok">200</span> GET / · 127.0.0.1 · 8ms</div>
+          </div>
+        </div>
+        <div class="cp-card">
+          <div class="cp-card-title">日志设置</div>
+          <div class="cp-text-muted">作用域：全局（默认）· 支持站点级覆盖 · 可配置多个输出目标</div>
+          <div class="cp-form">
+            <div class="cp-field"><label class="cp-label" for="cp-log-scope">作用域</label><select class="cp-select" id="cp-log-scope"><option>全局（默认）</option><option>站点：api</option><option>站点：www</option></select></div>
+            <div class="cp-field"><label class="cp-label" for="cp-log-format">格式</label><select class="cp-select" id="cp-log-format"><option>json</option><option>console</option></select></div>
+            <div class="cp-field"><label class="cp-label" for="cp-log-level">级别</label><select class="cp-select" id="cp-log-level"><option>info</option><option>warn</option><option>error</option></select></div>
+            <div class="cp-field"><label class="cp-label" for="cp-log-rotate">轮转策略</label><select class="cp-select" id="cp-log-rotate"><option>100MB / 14 天 / 压缩</option><option>200MB / 30 天 / 压缩</option><option>不轮转</option></select></div>
+          </div>
+          <div class="cp-card-title">输出目标（可多个）</div>
+          <div class="cp-form">
+            <div class="cp-field cp-field-wide"><div class="cp-upstream-row"><input class="cp-input" value="文件 logs/access.log" style="flex:1"><button type="button" class="cp-btn cp-btn-ghost">删除</button></div></div>
+            <div class="cp-field cp-field-wide"><div class="cp-upstream-row"><input class="cp-input" value="网络 udp://127.0.0.1:5140（syslog）" style="flex:1"><button type="button" class="cp-btn cp-btn-ghost">删除</button></div></div>
+            <div class="cp-field"><button type="button" class="cp-btn cp-btn-ghost">+ 添加输出目标</button></div>
+          </div>
+          <div class="cp-btn-row cp-actions-end">
+            <button type="button" class="cp-btn" data-logsettings-reset>重置</button>
+            <button type="button" class="cp-btn cp-btn-primary" data-logsettings-save>保存日志设置</button>
+          </div>
+          <div class="cp-notice" data-logsettings-notice role="status" aria-live="polite" hidden></div>
+        </div>
+      </div>
+
+      <div class="cp-page" data-page="security">
+        <div class="cp-page-head">
+          <div>
+            <div class="cp-card-title">安全分析</div>
+            <div class="cp-text-muted">基于访问日志增量聚合（SQLite），原始日志默认保留 14 天 / 2GB</div>
+          </div>
+          <div class="cp-field"><label class="cp-label" for="cp-sec-range">时间范围</label><select class="cp-select" id="cp-sec-range"><option>最近 1 小时</option><option>最近 24 小时</option><option>最近 7 天</option></select></div>
+        </div>
+        <div class="cp-stat-grid">
+          <div class="cp-card"><div class="cp-stat-label">可疑 IP</div><div class="cp-stat-value">7</div><div class="cp-stat-hint cp-amber">3 个 24 小时内活跃</div></div>
+          <div class="cp-card"><div class="cp-stat-label">扫描 URL</div><div class="cp-stat-value">214</div><div class="cp-stat-hint">命中 404 / 敏感路径</div></div>
+          <div class="cp-card"><div class="cp-stat-label">5xx 错误</div><div class="cp-stat-value">36</div><div class="cp-stat-hint cp-amber">错误率 1.2%</div></div>
+          <div class="cp-card"><div class="cp-stat-label">被拒绝请求</div><div class="cp-stat-value">128</div><div class="cp-stat-hint">access-filter 拦截</div></div>
+        </div>
+        <div class="cp-card">
+          <div class="cp-card-title">攻击 / 可疑 IP（Top）</div>
+          <div class="cp-table-wrap">
+            <table class="cp-table">
+              <thead><tr><th>IP</th><th>失败请求</th><th>主要路径</th><th>最近时间</th><th>风险</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>185.220.101.34</td><td>86</td><td>/.env, /wp-admin</td><td>21:39</td><td><span class="cp-pill cp-pill-red">高</span></td><td><button type="button" class="cp-btn cp-btn-ghost" data-ip-ban="185.220.101.34">加入黑名单</button></td></tr>
+                <tr><td>45.155.205.12</td><td>54</td><td>/admin, /api/login</td><td>21:28</td><td><span class="cp-pill cp-pill-amber">中</span></td><td><button type="button" class="cp-btn cp-btn-ghost" data-ip-ban="45.155.205.12">加入黑名单</button></td></tr>
+                <tr><td>103.77.56.9</td><td>31</td><td>/.git/config</td><td>20:55</td><td><span class="cp-pill cp-pill-amber">中</span></td><td><button type="button" class="cp-btn cp-btn-ghost" data-ip-ban="103.77.56.9">加入黑名单</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="cp-card">
+          <div class="cp-card-title">扫描 URL（Top 404）</div>
+          <div class="cp-table-wrap">
+            <table class="cp-table">
+              <thead><tr><th>路径</th><th>次数</th><th>状态码</th><th>来源 IP 数</th></tr></thead>
+              <tbody>
+                <tr><td>/.env</td><td>42</td><td>404</td><td>5</td></tr>
+                <tr><td>/wp-admin/install.php</td><td>31</td><td>404</td><td>4</td></tr>
+                <tr><td>/.git/config</td><td>18</td><td>404</td><td>3</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="cp-card">
+          <div class="cp-card-title">频繁错误（5xx Top）</div>
+          <div class="cp-table-wrap">
+            <table class="cp-table">
+              <thead><tr><th>域名 / 路径</th><th>状态码</th><th>次数</th><th>趋势</th></tr></thead>
+              <tbody>
+                <tr><td>api.example.test /api/gateway</td><td>502</td><td>18</td><td><span class="cp-pill cp-pill-amber">上升</span></td></tr>
+                <tr><td>api.example.test /api/report</td><td>500</td><td>9</td><td><span class="cp-pill">平稳</span></td></tr>
+                <tr><td>www.example.test /checkout</td><td>503</td><td>6</td><td><span class="cp-pill cp-pill-green">下降</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="cp-notice" data-security-notice role="status" aria-live="polite" hidden></div>
+      </div>
+
+      <div class="cp-page" data-page="storage">
+        <div class="cp-page-head">
+          <div>
+            <div class="cp-card-title">存储空间管理</div>
+            <div class="cp-text-muted">周期扫描（默认 30 分钟）· 大目录带缓存与增量统计</div>
+          </div>
+          <span class="cp-pill cp-pill-green"><span class="cp-dot cp-dot-green"></span>空间充足</span>
+        </div>
+        <div class="cp-stat-grid">
+          <div class="cp-card"><div class="cp-stat-label">磁盘使用率</div><div class="cp-stat-value">62%</div><div class="cp-stat-hint">已用 74GB / 120GB · 可用 45GB</div></div>
+          <div class="cp-card"><div class="cp-stat-label">日志占用</div><div class="cp-stat-value">1.2GB</div><div class="cp-stat-hint">上限 2GB · 保留 14 天</div></div>
+          <div class="cp-card"><div class="cp-stat-label">备份占用</div><div class="cp-stat-value">3.4GB</div><div class="cp-stat-hint">保留 30 份 · 每天自动清理</div></div>
+          <div class="cp-card"><div class="cp-stat-label">站点占用</div><div class="cp-stat-value">8.2GB</div><div class="cp-stat-hint">3 个站点 · 最大 www 5.6GB</div></div>
+        </div>
+        <div class="cp-card">
+          <div class="cp-card-title">站点空间</div>
+          <div class="cp-table-wrap">
+            <table class="cp-table">
+              <thead><tr><th>站点</th><th>路径</th><th>大小</th><th>配额</th><th>使用率</th></tr></thead>
+              <tbody>
+                <tr><td><span class="cp-strong">www</span></td><td>htdocs/www</td><td>5.6GB</td><td>10GB</td><td><div class="cp-progress-cell"><div class="cp-bar" style="width:140px"><div class="cp-bar-fill" style="width:56%"></div></div>56%</div></td></tr>
+                <tr><td><span class="cp-strong">api</span></td><td>htdocs/api</td><td>1.9GB</td><td>5GB</td><td><div class="cp-progress-cell"><div class="cp-bar" style="width:140px"><div class="cp-bar-fill" style="width:38%"></div></div>38%</div></td></tr>
+                <tr><td><span class="cp-strong">static</span></td><td>htdocs/static</td><td>0.7GB</td><td>2GB</td><td><div class="cp-progress-cell"><div class="cp-bar" style="width:140px"><div class="cp-bar-fill" style="width:35%"></div></div>35%</div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="cp-card">
+          <div class="cp-card-title">清理与保留策略</div>
+          <div class="cp-form">
+            <div class="cp-field"><label class="cp-label" for="cp-st-log">日志保留</label><select class="cp-select" id="cp-st-log"><option>14 天 或 2GB</option><option>7 天 或 1GB</option><option>30 天 或 5GB</option></select></div>
+            <div class="cp-field"><label class="cp-label" for="cp-st-backup">备份保留</label><select class="cp-select" id="cp-st-backup"><option>30 份</option><option>10 份</option><option>60 份</option></select></div>
+            <div class="cp-field"><label class="cp-label">自动清理</label><label class="cp-switch"><input type="checkbox" checked><span class="cp-switch-track"></span></label><span class="cp-text-muted">仅清理日志与过期备份，站点文件不自动删除</span></div>
+          </div>
+          <div class="cp-btn-row">
+            <button type="button" class="cp-btn" data-storage-clean="logs">立即清理日志</button>
+            <button type="button" class="cp-btn" data-storage-clean="backups">立即清理过期备份</button>
+          </div>
+          <div class="cp-notice" data-storage-notice role="status" aria-live="polite" hidden></div>
+        </div>
+        <div class="cp-card">
+          <div class="cp-card-title">告警阈值</div>
+          <div class="cp-form">
+            <div class="cp-field"><label class="cp-label" for="cp-st-warn">全局警告阈值</label><input class="cp-input" id="cp-st-warn" value="磁盘 80% · 日志 1.6GB" disabled></div>
+            <div class="cp-field"><label class="cp-label" for="cp-st-crit">全局紧急阈值</label><input class="cp-input" id="cp-st-crit" value="磁盘 90% · 备份目录 <2GB 暂停备份" disabled></div>
+            <div class="cp-field"><label class="cp-label" for="cp-st-quota">站点软/硬配额</label><input class="cp-input" id="cp-st-quota" value="软 80% 警告 · 硬 95% 告警" disabled></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cp-page" data-page="backups">
+        <div class="cp-page-head">
+          <div>
+            <div class="cp-card-title">备份与恢复</div>
+            <div class="cp-text-muted">配置快照（秒级回滚）+ 站点文件备份（数据级）</div>
+          </div>
+          <button type="button" class="cp-btn cp-btn-primary" data-backup-create><i data-lucide="plus" aria-hidden="true"></i> 新建站点备份</button>
+        </div>
+        <div class="cp-notice cp-notice-amber" role="status">备份与源数据当前同盘存储；异地备份目标（SFTP / S3）计划中（P2）</div>
+        <div class="cp-card">
+          <div class="cp-card-title">配置快照</div>
+          <div class="cp-table-wrap">
+            <table class="cp-table">
+              <thead><tr><th>时间</th><th>说明</th><th>大小</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>21:38:12</td><td>保存并应用 · Caddyfile（全局）</td><td>4KB</td><td><button type="button" class="cp-btn cp-btn-ghost" data-snapshot-restore>回滚</button></td></tr>
+                <tr><td>21:05:47</td><td>更新站点 · api.example.test</td><td>2KB</td><td><button type="button" class="cp-btn cp-btn-ghost" data-snapshot-restore>回滚</button></td></tr>
+                <tr><td>20:41:03</td><td>保存并应用 · 站点 www</td><td>3KB</td><td><button type="button" class="cp-btn cp-btn-ghost" data-snapshot-restore>回滚</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="cp-card">
+          <div class="cp-card-title">站点备份</div>
+          <div class="cp-table-wrap">
+            <table class="cp-table">
+              <thead><tr><th>备份</th><th>站点</th><th>类型</th><th>大小</th><th>创建时间</th><th>保留至</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>www-20260830-0200</td><td>www</td><td>全量</td><td>412MB</td><td>2026-08-30 02:00</td><td>2026-09-29</td><td><div class="cp-actions"><button type="button" class="cp-btn cp-btn-ghost" data-backup-restore>恢复</button><button type="button" class="cp-btn cp-btn-ghost">下载</button></div></td></tr>
+                <tr><td>api-20260830-0200</td><td>api</td><td>全量</td><td>96MB</td><td>2026-08-30 02:00</td><td>2026-09-29</td><td><div class="cp-actions"><button type="button" class="cp-btn cp-btn-ghost" data-backup-restore>恢复</button><button type="button" class="cp-btn cp-btn-ghost">下载</button></div></td></tr>
+                <tr><td>www-20260829-0200</td><td>www</td><td>全量</td><td>410MB</td><td>2026-08-29 02:00</td><td>2026-09-28</td><td><div class="cp-actions"><button type="button" class="cp-btn cp-btn-ghost" data-backup-restore>恢复</button><button type="button" class="cp-btn cp-btn-ghost">下载</button></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="cp-text-muted">定时备份：每日 02:00 · 保留 30 份 · 排除 cache / node_modules / vendor / logs</div>
+          <div class="cp-notice" data-backup-notice role="status" aria-live="polite" hidden></div>
+        </div>
+      </div>
+
+      <div class="cp-page" data-page="settings">
+        <div class="cp-page-head"><div class="cp-card-title">设置</div></div>
+
+        <div class="cp-card">
+          <div class="cp-card-title">认证</div>
+          <div class="cp-form">
+            <div class="cp-field"><label class="cp-label">本地免认证</label><label class="cp-switch"><input type="checkbox" data-local-auth checked><span class="cp-switch-track"></span></label><span class="cp-text-muted">127.0.0.1 / ::1 访问时自动进入管理员</span></div>
+            <div class="cp-field"><label class="cp-label">管理员账号</label><input class="cp-input" value="admin" disabled></div>
+            <div class="cp-field"><label class="cp-label">登录限速</label><input class="cp-input" value="5 次 / 5 分钟" disabled></div>
+            <div class="cp-field"><label class="cp-label">修改密码</label><button type="button" class="cp-btn" data-password-change>修改密码</button></div>
+            <div class="cp-field"><label class="cp-label">忘记密码</label><span class="cp-text-muted">CLI：<code>php bin/panel passwd</code>；或编辑 config.php 一次性重置项（应用后自动清除）</span></div>
+            <div class="cp-field"><label class="cp-label">远程初始化</label><span class="cp-text-muted">远程首次访问需 setup token（CLI 生成或放置 <code>var/setup.token</code>）</span></div>
+          </div>
+          <div class="cp-notice" data-auth-notice role="status" aria-live="polite" hidden></div>
+        </div>
+
+        <div class="cp-card">
+          <div class="cp-card-title">面板</div>
+          <div class="cp-form">
+            <div class="cp-field"><label class="cp-label" for="cp-lang">语言</label><select class="cp-select" id="cp-lang"><option>简体中文</option><option>English</option></select></div>
+            <div class="cp-field"><label class="cp-label" for="cp-theme">主题</label><select class="cp-select" id="cp-theme"><option>跟随系统</option><option>浅色</option><option>深色</option></select></div>
+          </div>
+        </div>
+
+        <div class="cp-card">
+          <div class="cp-card-title">API Token</div>
+          <div class="cp-text-muted">用于 CI/CD、MCP 与 FRAMPP Agent 自动化；Token 仅在生成时显示一次。</div>
+          <div class="cp-btn-row"><button type="button" class="cp-btn cp-btn-primary" data-token-generate>生成新 Token</button></div>
+          <div class="cp-token" data-token-value hidden>cp_live_8f3a1c9e2b7d4a6f0e5c8b1a9d3f7e2c</div>
+          <div class="cp-notice" data-token-notice role="status" aria-live="polite" hidden></div>
+        </div>
+
+        <div class="cp-card">
+          <div class="cp-card-title">Caddy 连接</div>
+          <div class="cp-form">
+            <div class="cp-field cp-field-wide"><label class="cp-label" for="cp-admin-url">Admin API 地址（config.php → caddy.admin_api）</label><input class="cp-input" id="cp-admin-url" value="http://127.0.0.1:2019"></div>
+            <div class="cp-warn" data-admin-warn hidden>非回环地址：请确认 Admin API 已受防火墙/认证保护，否则任何人可控制 Caddy；建议改用 unix socket 或仅监听 localhost。</div>
+            <div class="cp-field"><label class="cp-label">连接状态</label><span class="cp-pill cp-pill-green"><span class="cp-dot cp-dot-green"></span>正常</span></div>
+            <div class="cp-field"><label class="cp-label" for="cp-frag-dir">站点片段目录</label><input class="cp-input" id="cp-frag-dir" value="etc/caddy.d" disabled></div>
+            <div class="cp-field"><label class="cp-label" for="cp-master">主 Caddyfile</label><input class="cp-input" id="cp-master" value="etc/Caddyfile（自动组装）" disabled></div>
+            <div class="cp-field cp-field-wide"><label class="cp-label">操作</label><div class="cp-btn-row"><button type="button" class="cp-btn" data-admin-test>测试连通</button><button type="button" class="cp-btn cp-btn-primary" data-admin-save>保存并同步到 Caddyfile</button></div></div>
+          </div>
+          <div class="cp-notice" data-admin-notice role="status" aria-live="polite" hidden></div>
+        </div>
+
+        <div class="cp-card">
+          <div class="cp-card-title">快照与备份</div>
+          <div class="cp-text-muted">每次保存前自动创建快照；保留最近 30 份。</div>
+          <div class="cp-table-wrap">
+            <table class="cp-table">
+              <thead><tr><th>时间</th><th>说明</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>21:38:12</td><td>保存并应用 · Caddyfile（全局）</td><td><button type="button" class="cp-btn cp-btn-ghost" data-snapshot-restore>回滚</button></td></tr>
+                <tr><td>21:05:47</td><td>更新站点 · api.example.test</td><td><button type="button" class="cp-btn cp-btn-ghost" data-snapshot-restore>回滚</button></td></tr>
+                <tr><td>20:41:03</td><td>保存并应用 · 站点 www</td><td><button type="button" class="cp-btn cp-btn-ghost" data-snapshot-restore>回滚</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="cp-notice" data-snapshot-notice role="status" aria-live="polite" hidden></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<div class="cp-overlay" data-login-overlay hidden>
+  <div class="cp-overlay-card">
+    <div class="cp-overlay-head">
+      <div class="cp-card-title">认证（远程访问预览）</div>
+      <button type="button" class="cp-btn cp-btn-ghost" data-login-close>关闭</button>
+    </div>
+    <div class="cp-tabs">
+      <button type="button" class="cp-tab is-active" data-login-tab="login">登录</button>
+      <button type="button" class="cp-tab" data-login-tab="init">首次初始化</button>
+    </div>
+    <div data-login-view="login">
+      <div class="cp-form">
+        <div class="cp-field"><label class="cp-label">管理员账号</label><input class="cp-input" value="admin"></div>
+        <div class="cp-field"><label class="cp-label">密码</label><input class="cp-input" type="password" value="••••••••"></div>
+      </div>
+      <div class="cp-text-muted">登录限速：5 次失败锁定 15 分钟 · 会话 Cookie：HttpOnly + SameSite</div>
+      <div class="cp-btn-row"><button type="button" class="cp-btn cp-btn-primary" data-login-submit>登录</button></div>
+      <div class="cp-notice" data-login-notice role="status" aria-live="polite" hidden></div>
+    </div>
+    <div data-login-view="init" hidden>
+      <div class="cp-form">
+        <div class="cp-field cp-field-wide"><label class="cp-label">Setup Token</label><input class="cp-input" placeholder="由 php bin/panel setup 生成，或放置 var/setup.token"></div>
+        <div class="cp-field"><label class="cp-label">新密码</label><input class="cp-input" type="password"></div>
+        <div class="cp-field"><label class="cp-label">确认密码</label><input class="cp-input" type="password"></div>
+      </div>
+      <div class="cp-btn-row"><button type="button" class="cp-btn cp-btn-primary" data-login-init>初始化并登录</button></div>
+      <div class="cp-notice" data-init-notice role="status" aria-live="polite" hidden></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var root = document.getElementById('caddy-panel-prototype');
+  if (!root) { return; }
+  var pages = root.querySelectorAll('.cp-page');
+  var navItems = root.querySelectorAll('.cp-nav-item');
+  var topTitle = root.querySelector('.cp-topbar-title');
+  var advancedToggle = root.querySelector('[data-advanced-toggle]');
+  var modeSelect = root.querySelector('[data-site-mode]');
+  var formFields = root.querySelector('[data-form-fields]');
+  var rawBlock = root.querySelector('.cp-raw-block');
+  var rawEditor = root.querySelector('[data-raw-editor]');
+  var modeNote = root.querySelector('[data-mode-note]');
+  var editorTitle = root.querySelector('[data-editor-title]');
+  var nameInput = root.querySelector('[data-name]');
+  var domainInput = root.querySelector('[data-domain-input]');
+
+  function showPage(name) {
+    pages.forEach(function (p) { p.classList.toggle('is-active', p.getAttribute('data-page') === name); });
+    navItems.forEach(function (n) {
+      var active = n.getAttribute('data-page') === name;
+      n.classList.toggle('is-active', active);
+      if (active) {
+        n.setAttribute('aria-current', 'page');
+        if (topTitle) { topTitle.textContent = n.getAttribute('data-title') || ''; }
+      } else {
+        n.removeAttribute('aria-current');
+      }
+    });
+  }
+
+  function rawBlockFor(mode, domain) {
+    if (mode === 'php') {
+      return domain + ' {\n    root * htdocs/www\n    php_server\n}';
+    }
+    if (mode === 'static') {
+      return domain + ' {\n    root * htdocs/static\n    file_server\n}';
+    }
+    return domain + ' {\n    reverse_proxy 127.0.0.1:9000 127.0.0.1:9001 {\n        lb_policy round_robin\n        health_uri /health\n    }\n    header {\n        X-Forwarded-Prefix /api\n    }\n}';
+  }
+
+  function applyModeState() {
+    var mode = modeSelect ? modeSelect.value : 'proxy';
+    root.querySelectorAll('[data-for]').forEach(function (el) {
+      var modes = (el.getAttribute('data-for') || '').split(' ');
+      el.hidden = modes.indexOf(mode) === -1;
+    });
+  }
+
+  function applyAdvancedState() {
+    var adv = advancedToggle ? advancedToggle.checked : false;
+    if (rawBlock) { rawBlock.hidden = !adv; }
+    if (modeNote) {
+      modeNote.textContent = adv
+        ? '高级模式：表单字段锁定，直接编辑该站点原始 Caddyfile 块'
+        : '表单模式：编辑字段生成 Caddyfile 片段';
+    }
+    if (formFields) {
+      formFields.querySelectorAll('input, select, button').forEach(function (el) { el.disabled = adv; });
+    }
+  }
+
+  function openEditor(d) {
+    var name = (d && d.name) || '';
+    var domain = (d && d.domain) || 'new.example.test';
+    var mode = (d && d.mode) || 'proxy';
+    var advanced = !!(d && d.advanced);
+    if (editorTitle) { editorTitle.textContent = name ? ('编辑站点：' + name) : '新建站点'; }
+    if (nameInput) { nameInput.value = name || 'new-site'; }
+    if (domainInput) { domainInput.value = domain; }
+    if (modeSelect) { modeSelect.value = mode; }
+    if (advancedToggle) { advancedToggle.checked = advanced; }
+    if (rawEditor) { rawEditor.textContent = rawBlockFor(mode, domain); }
+    applyModeState();
+    applyAdvancedState();
+    showPage('site-editor');
+  }
+
+  function setNotice(sel, msg) {
+    var el = root.querySelector(sel);
+    if (!el) { return; }
+    if (msg) {
+      el.textContent = msg;
+      el.hidden = false;
+    } else {
+      el.hidden = true;
+    }
+  }
+
+  root.addEventListener('click', function (e) {
+    var nav = e.target.closest('.cp-nav-item');
+    if (nav) { showPage(nav.getAttribute('data-page')); return; }
+
+    var go = e.target.closest('[data-goto]');
+    if (go) { showPage(go.getAttribute('data-goto')); return; }
+
+    var edit = e.target.closest('[data-edit-site]');
+    if (edit) {
+      openEditor({ name: edit.getAttribute('data-edit-site'), domain: edit.getAttribute('data-domain'), mode: edit.getAttribute('data-mode'), advanced: edit.hasAttribute('data-advanced') });
+      return;
+    }
+
+    var fresh = e.target.closest('[data-new-site]');
+    if (fresh) { openEditor({ name: '', domain: 'new.example.test', mode: 'proxy' }); return; }
+
+    var imp = e.target.closest('[data-cert-import]');
+    if (imp) {
+      showPage('certificates');
+      var panel = root.querySelector('[data-cert-panel]');
+      if (panel) { panel.hidden = false; }
+      return;
+    }
+
+    var certCancel = e.target.closest('[data-cert-cancel]');
+    if (certCancel) {
+      var panel2 = root.querySelector('[data-cert-panel]');
+      if (panel2) { panel2.hidden = true; }
+      return;
+    }
+
+    var certConfirm = e.target.closest('[data-cert-confirm]');
+    if (certConfirm) {
+      var panel3 = root.querySelector('[data-cert-panel]');
+      if (panel3) { panel3.hidden = true; }
+      setNotice('[data-cert-notice]', '已导入证书并应用到 api.example.test（已切换为手动证书，可随时还原自动证书）');
+      return;
+    }
+
+    var accessAdd = e.target.closest('[data-access-add]');
+    if (accessAdd) {
+      setNotice('[data-access-notice]', '规则已添加，将通过 Caddy Admin API 热重载生效');
+      return;
+    }
+
+    var cfCheck = e.target.closest('[data-cf-check]');
+    if (cfCheck) {
+      var ok = root.querySelector('[data-cf-ok]');
+      var err = root.querySelector('[data-cf-err]');
+      if (ok) { ok.hidden = false; }
+      if (err) { err.hidden = true; }
+      return;
+    }
+
+    var cfFail = e.target.closest('[data-cf-fail]');
+    if (cfFail) {
+      var ok2 = root.querySelector('[data-cf-ok]');
+      var err2 = root.querySelector('[data-cf-err]');
+      if (ok2) { ok2.hidden = true; }
+      if (err2) { err2.hidden = false; }
+      return;
+    }
+
+    var cfSave = e.target.closest('[data-cf-save]');
+    if (cfSave) {
+      setNotice('[data-cf-ok]', null);
+      var ok3 = root.querySelector('[data-cf-ok]');
+      if (ok3) {
+        ok3.hidden = false;
+        ok3.innerHTML = '已保存并应用 · 配置已热加载 · 快照已创建<div class="cp-json">{"apps":{"http":{"servers":{...}}}}</div>';
+      }
+      return;
+    }
+
+    var cfCustom = e.target.closest('[data-cf-custom]');
+    if (cfCustom) {
+      setNotice('[data-cf-custom-notice]', '已切换完全自定义模式：站点列表转为只读，面板仅保留该文件的编辑、校验与加载。');
+      return;
+    }
+
+    var edCheck = e.target.closest('[data-editor-check]');
+    if (edCheck) {
+      setNotice('[data-editor-notice]', '适配成功 · 未加载（检查通过，可安全保存并应用）');
+      return;
+    }
+
+    var edSave = e.target.closest('[data-editor-save]');
+    if (edSave) {
+      setNotice('[data-editor-notice]', '已保存并应用 · 配置已热加载 · 快照已创建');
+      return;
+    }
+
+    var token = e.target.closest('[data-token-generate]');
+    if (token) {
+      var tv = root.querySelector('[data-token-value]');
+      if (tv) { tv.hidden = false; }
+      setNotice('[data-token-notice]', 'Token 已生成，仅显示一次，请妥善保存；作用域：admin');
+      return;
+    }
+
+    var snap = e.target.closest('[data-snapshot-restore]');
+    if (snap) {
+      setNotice('[data-snapshot-notice]', '已从快照回滚，配置已重新加载并应用');
+      return;
+    }
+
+    var ipBan = e.target.closest('[data-ip-ban]');
+    if (ipBan) {
+      setNotice('[data-security-notice]', '已把 ' + ipBan.getAttribute('data-ip-ban') + ' 加入黑名单（默认 24 小时，可在访问控制页调整作用域与有效期），规则已热重载');
+      return;
+    }
+
+    var backupCreate = e.target.closest('[data-backup-create]');
+    if (backupCreate) {
+      setNotice('[data-backup-notice]', '站点备份任务已创建（全量），完成后将出现在列表');
+      return;
+    }
+
+    var backupRestore = e.target.closest('[data-backup-restore]');
+    if (backupRestore) {
+      setNotice('[data-backup-notice]', '已恢复到原目录；恢复前状态已另存快照，可随时回退');
+      return;
+    }
+
+    var storageClean = e.target.closest('[data-storage-clean]');
+    if (storageClean) {
+      var kind = storageClean.getAttribute('data-storage-clean');
+      setNotice('[data-storage-notice]', kind === 'logs' ? '日志已轮转清理，释放约 320MB' : '已清理 3 份过期备份，释放约 810MB');
+      return;
+    }
+
+    var logSettingsSave = e.target.closest('[data-logsettings-save]');
+    if (logSettingsSave) {
+      setNotice('[data-logsettings-notice]', '日志设置已保存并热加载（/adapt → /load），日志查看器与安全分析将使用同一数据源');
+      return;
+    }
+
+    var logSettingsReset = e.target.closest('[data-logsettings-reset]');
+    if (logSettingsReset) {
+      setNotice('[data-logsettings-notice]', '已重置为默认日志配置（json · info · 100MB / 14 天）');
+      return;
+    }
+
+    var blacklistAdd = e.target.closest('[data-blacklist-add]');
+    if (blacklistAdd) {
+      setNotice('[data-blacklist-notice]', '已添加黑名单条目并热重载 access-filter 规则');
+      return;
+    }
+
+    var blacklistToggle = e.target.closest('[data-blacklist-toggle]');
+    if (blacklistToggle) {
+      setNotice('[data-blacklist-notice]', '黑名单条目状态已切换并热重载');
+      return;
+    }
+
+    var blacklistRemove = e.target.closest('[data-blacklist-remove]');
+    if (blacklistRemove) {
+      setNotice('[data-blacklist-notice]', '黑名单条目已删除并热重载');
+      return;
+    }
+
+    var loginPreview = e.target.closest('[data-login-preview]');
+    if (loginPreview) {
+      var overlay = root.querySelector('[data-login-overlay]');
+      if (overlay) { overlay.hidden = false; }
+      return;
+    }
+
+    var loginClose = e.target.closest('[data-login-close]');
+    if (loginClose) {
+      var overlay2 = root.querySelector('[data-login-overlay]');
+      if (overlay2) { overlay2.hidden = true; }
+      return;
+    }
+
+    var loginTab = e.target.closest('[data-login-tab]');
+    if (loginTab) {
+      root.querySelectorAll('[data-login-tab]').forEach(function (t) {
+        t.classList.toggle('is-active', t === loginTab);
+      });
+      root.querySelectorAll('[data-login-view]').forEach(function (v) {
+        v.hidden = v.getAttribute('data-login-view') !== loginTab.getAttribute('data-login-tab');
+      });
+      return;
+    }
+
+    var loginSubmit = e.target.closest('[data-login-submit]');
+    if (loginSubmit) {
+      setNotice('[data-login-notice]', '已登录（演示）：远程访问校验通过，会话已建立');
+      return;
+    }
+
+    var loginInit = e.target.closest('[data-login-init]');
+    if (loginInit) {
+      setNotice('[data-init-notice]', '初始化完成（演示）：管理员账号已创建，setup token 已失效，进入仪表盘');
+      return;
+    }
+
+    var passwordChange = e.target.closest('[data-password-change]');
+    if (passwordChange) {
+      setNotice('[data-auth-notice]', '修改密码流程已开始：需验证当前密码，新密码以 Argon2id 哈希存储');
+      return;
+    }
+
+    var adminTest = e.target.closest('[data-admin-test]');
+    if (adminTest) {
+      setNotice('[data-admin-notice]', '连接测试通过：Admin API 可达，版本响应正常');
+      return;
+    }
+
+    var adminSave = e.target.closest('[data-admin-save]');
+    if (adminSave) {
+      setNotice('[data-admin-notice]', '连接配置已写入 config.php 并同步到生成的 Caddyfile admin 指令；如修改了监听端口，需重启 Caddy 生效');
+      return;
+    }
+  });
+
+  root.addEventListener('change', function (e) {
+    if (e.target === advancedToggle) { applyAdvancedState(); return; }
+    if (e.target === modeSelect) {
+      applyModeState();
+      var domain = domainInput ? domainInput.value : 'example.test';
+      if (rawEditor) { rawEditor.textContent = rawBlockFor(modeSelect.value, domain); }
+      return;
+    }
+    if (e.target.hasAttribute('data-log-autorefresh')) {
+      setNotice('[data-log-notice]', e.target.checked ? '自动刷新已开启' : '自动刷新已暂停');
+      return;
+    }
+    if (e.target.hasAttribute('data-local-auth')) {
+      setNotice('[data-auth-notice]', e.target.checked ? '本地免认证已开启' : '本地免认证已关闭，所有访问均需登录');
+      return;
+    }
+    if (e.target && e.target.id === 'cp-admin-url') {
+      var warn = root.querySelector('[data-admin-warn]');
+      var v = e.target.value || '';
+      var loopback = /127\.0\.0\.1|localhost|::1|unix\//.test(v);
+      if (warn) { warn.hidden = loopback; }
+      return;
+    }
+  });
+})();
+</script>
+</div>

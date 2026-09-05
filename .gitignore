@@ -1,0 +1,57 @@
+# 第三方二进制由脚本下载，不提交
+/dist/binaries/
+/dist/runtime/
+/dist/staging/
+/dist/staging-linux/
+/dist/tools/
+/dist/installer/
+/dist/install-test/
+
+# 运行时数据与日志
+/logs/
+/data/
+*.log
+
+# PHP
+/vendor/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# Node（控制面板如使用）
+node_modules/
+
+# 环境变量与密钥
+.env
+.env.*
+!.env.example
+
+# caddy-panel：运行时生成（安装向导 / 设置页创建，不提交）
+/config.php
+/var/
+/etc/caddy.d/
+/etc/Caddyfile
+/etc/global.caddy
+
+# 本地开发工具（如临时 PHP 运行时）
+/.tools/
+
+# 打包产物
+build/
+*.exe
+*.msi
+*.dmg
+
+# 编辑器与系统
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# openssl 随机种子等杂项
+/.rnd
+*.rnd
+

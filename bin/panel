@@ -1,0 +1,277 @@
+<?php
+declare(strict_types=1);
+
+// caddy-panel CLI — php bin/panel <command> [--lang=zh]
+if (PHP_SAPI !== 'cli') {
+    exit("CLI only\n");
+}
+
+require dirname(__DIR__) . '/src/php/autoload.php';
+
+use CaddyPanel\AdminClient;
+use CaddyPanel\Audit;
+use CaddyPanel\Config;
+use CaddyPanel\Db;
+use CaddyPanel\Recovery;
+use CaddyPanel\SiteManager;
+
+$argvAll = $argv ?? [];
+$langEnv = getenv('CADDY_PANEL_LANG') ?: 'en';
+$lang = $langEnv === 'zh' ? 'zh' : 'en';
+foreach (array_slice($argvAll, 1) as $a) {
+    if (str_starts_with($a, '--lang=')) {
+        $lang = substr($a, strlen('--lang=')) === 'zh' ? 'zh' : 'en';
+    }
+}
+
+$cmd = $argvAll[1] ?? 'help';
+$config = Config::load(APP_ROOT);
+
+function L(string $en, string $zh): string
+{
+    global $lang;
+    return $lang === 'zh' ? $zh : $en;
+}
+
+function prompt(string $label, bool $hidden = false): string
+{
+    echo $label . ($hidden ? ' (hidden input)' : '') . ': ';
+    if ($hidden) {
+        system('stty -echo 2>/dev/null');
+        $v = trim((string) fgets(STDIN));
+        system('stty echo 2>/dev/null');
+        echo "\n";
+        return $v;
+    }
+    return trim((string) fgets(STDIN));
+}
+
+function commandExists(string $bin): bool
+{
+    if (trim($bin) === '') {
+        return false;
+    }
+    $probe = PHP_OS_FAMILY === 'Windows'
+        ? 'where ' . $bin . ' >nul 2>&1'
+        : 'command -v ' . $bin . ' >/dev/null 2>&1';
+    exec($probe, $o, $code);
+    return $code === 0;
+}
+
+function adaptLocal(Config $config): array
+{
+    if (!function_exists('exec')) {
+        return ['ok' => null, 'output' => L('exec() is disabled', 'exec() 被禁用')];
+    }
+    $bins = [trim((string) $config->get('caddy.executable', ''))];
+    $bins[] = 'caddy';
+    $bins[] = 'frankenphp';
+    foreach (array_filter(array_unique($bins)) as $bin) {
+        if (!commandExists($bin)) {
+            continue;
+        }
+        $cmd = $bin . ' adapt --config ' . escapeshellarg($config->caddyfilePath()) . ' --adapter caddyfile 2>&1';
+        exec($cmd, $out, $code);
+        $text = implode("\n", $out);
+        return ['ok' => $code === 0, 'output' => $text, 'bin' => $bin];
+    }
+    return ['ok' => null, 'output' => L('No caddy/frankenphp binary found on PATH', 'PATH 中未找到 caddy/frankenphp 可执行文件')];
+}
+
+switch ($cmd) {
+    case 'help':
+    case '--help':
+        echo L("caddy-panel CLI\n", "caddy-panel 命令行\n");
+        echo L(
+            "  php bin/panel snapshot [--reason=...]           Save a full config snapshot (Caddyfile + fragments)\n"
+            . "  php bin/panel restore --list | --latest | --id=<ts> | --last-good [--verify]\n"
+            . "                                                 Restore a snapshot / last known good config (works when FrankenPHP is down)\n"
+            . "  php bin/panel doctor [--fix]                   Check config integrity; --fix restores last-good when broken\n"
+            . "  php bin/panel passwd [--username=admin] [--password=NEW]  Reset the admin password (requires server shell)\n"
+            . "  php bin/panel setup                            Generate a one-time setup token for remote initialization\n"
+            . "  php bin/panel status                           Show runtime status\n"
+            . "Language: English by default; use --lang=zh or CADDY_PANEL_LANG=zh for Chinese.\n",
+            "  php bin/panel snapshot [--reason=...]           保存全量配置快照（Caddyfile + 片段）\n"
+            . "  php bin/panel restore --list | --latest | --id=<时间戳> | --last-good [--verify]\n"
+            . "                                                 恢复快照 / 上次可用配置（FrankenPHP 无法启动时也可用）\n"
+            . "  php bin/panel doctor [--fix]                   检查配置完整性；损坏时 --fix 恢复 last-good\n"
+            . "  php bin/panel passwd [--username=admin] [--password=新密码]  重置管理员密码（需服务器 shell）\n"
+            . "  php bin/panel setup                            生成远程首次初始化 setup token\n"
+            . "  php bin/panel status                           查看运行状态\n"
+            . "语言：默认英语；使用 --lang=zh 或 CADDY_PANEL_LANG=zh 切换中文。\n"
+        );
+        break;
+
+    case 'passwd':
+        $username = 'admin';
+        $password = '';
+        foreach (array_slice($argvAll, 2) as $a) {
+            if (str_starts_with($a, '--username=')) {
+                $username = substr($a, strlen('--username='));
+            }
+            if (str_starts_with($a, '--password=')) {
+                $password = substr($a, strlen('--password='));
+            }
+        }
+        if ($password === '') {
+            $password = prompt(L('New password', '新密码'), true);
+            $confirm = prompt(L('Repeat password', '再次输入'), true);
+            if ($password !== $confirm) {
+                exit(L("Passwords do not match\n", "两次输入不一致\n"));
+            }
+        }
+        if (strlen($password) < 8) {
+            exit(L("Password must be at least 8 characters\n", "密码至少 8 位\n"));
+        }
+        $stmt = Db::get()->prepare('SELECT id FROM users WHERE username=?');
+        $stmt->execute([$username]);
+        if (!$stmt->fetch()) {
+            exit(L(
+                "User {$username} does not exist; complete installation first via install.php\n",
+                "用户 {$username} 不存在；请先通过 install.php 完成初始化\n"
+            ));
+        }
+        Db::get()->prepare('UPDATE users SET password_hash=? WHERE username=?')
+            ->execute([password_hash($password, PASSWORD_ARGON2ID), $username]);
+        Audit::log('cliReset', $username, 'ok', 'cli');
+        echo L("Password reset for: {$username}\n", "密码已重置：{$username}\n");
+        break;
+
+    case 'setup':
+        $token = bin2hex(random_bytes(20));
+        $dir = APP_ROOT . '/var';
+        if (!is_dir($dir)) {
+            mkdir($dir, 0775, true);
+        }
+        file_put_contents($dir . '/setup.token', $token . "\n");
+        @chmod($dir . '/setup.token', 0600);
+        echo L(
+            "Setup token written to var/setup.token (one-time):\n{$token}\n",
+            "Setup token 已写入 var/setup.token（一次性）：\n{$token}\n"
+        );
+        break;
+
+    case 'snapshot':
+        $reason = 'manual';
+        foreach (array_slice($argvAll, 2) as $a) {
+            if (str_starts_with($a, '--reason=')) {
+                $reason = substr($a, strlen('--reason='));
+            }
+        }
+        $id = Recovery::create($config, $reason);
+        echo L("Snapshot created: {$id}\n", "已创建快照：{$id}\n");
+        foreach (Recovery::list() as $it) {
+            echo '  ' . $it['id'] . '  ' . $it['created_at'] . '  ' . $it['reason'] . "\n";
+        }
+        break;
+
+    case 'restore':
+        $args = array_slice($argvAll, 2);
+        if (in_array('--list', $args, true) || in_array('-l', $args, true)) {
+            $items = Recovery::list();
+            if (!$items) {
+                echo L("No snapshots found\n", "暂无快照\n");
+                break;
+            }
+            foreach ($items as $it) {
+                echo '  ' . $it['id'] . '  ' . $it['created_at'] . '  ' . $it['reason'] . "\n";
+            }
+            echo L("Use: php bin/panel restore --id=<ts> (or --latest / --last-good)\n", "恢复：php bin/panel restore --id=<时间戳>（或 --latest / --last-good）\n");
+            break;
+        }
+        $target = 'latest';
+        foreach ($args as $a) {
+            if (str_starts_with($a, '--id=')) {
+                $target = substr($a, strlen('--id='));
+            } elseif ($a === '--last-good') {
+                $target = 'last-good';
+            } elseif ($a === '--latest') {
+                $target = 'latest';
+            }
+        }
+        if ($target === 'latest') {
+            $latest = Recovery::latest();
+            if ($latest === null) {
+                exit(L("No snapshots found\n", "暂无快照\n"));
+            }
+            $target = basename($latest);
+        }
+        try {
+            $r = Recovery::restore($config, $target);
+        } catch (\CaddyPanel\ApiError $ex) {
+            exit(L("Restore failed: {$ex->errorCode}\n", "恢复失败：{$ex->errorCode}\n"));
+        }
+        echo L(
+            "Restored snapshot {$r['id']} ({$r['reason']}) → {$r['main']}, {$r['fragments']} fragment file(s).\nStart FrankenPHP / Caddy to apply.\n",
+            "已恢复快照 {$r['id']}（{$r['reason']}）→ {$r['main']}，{$r['fragments']} 个片段文件。\n启动 FrankenPHP / Caddy 后生效。\n"
+        );
+        if (in_array('--verify', $args, true)) {
+            $v = adaptLocal($config);
+            echo L($v['output'], $v['output']);
+            echo $v['ok'] ? L("\nVerify OK\n", "\n校验通过\n") : L("\nVerify failed\n", "\n校验失败\n");
+        }
+        break;
+
+    case 'doctor':
+        $fix = in_array('--fix', $argvAll, true);
+        $d = Recovery::doctor($config);
+        foreach ($d['issues'] as $issue) {
+            echo L("ERROR: {$issue}\n", "错误：{$issue}\n");
+        }
+        foreach ($d['warnings'] as $w) {
+            echo L("WARN: {$w}\n", "警告：{$w}\n");
+        }
+        $v = adaptLocal($config);
+        if ($v['ok'] === true) {
+            echo L("Config adapts successfully ({$v['bin']}).\n", "配置可通过本地适配（{$v['bin']}）。\n");
+        } elseif ($v['ok'] === null) {
+            echo L("Local adapt skipped: " . $v['output'] . "\n", "本地适配跳过：" . $v['output'] . "\n");
+        } else {
+            echo L("Local adapt FAILED ({$v['bin']}):\n" . $v['output'] . "\n", "本地适配失败（{$v['bin']}）：\n" . $v['output'] . "\n");
+            if ($fix) {
+                $d['issues'][] = 'adapt-failed';
+            }
+        }
+        if ($d['ok'] && $v['ok'] !== false) {
+            echo L("doctor: OK\n", "doctor：正常\n");
+            break;
+        }
+        if ($fix) {
+            $src = Recovery::lastGood();
+            if ($src === null) {
+                $src = Recovery::latest();
+            }
+            if ($src !== null) {
+                Recovery::restore($config, basename($src));
+                echo L("Restored " . basename($src) . "; re-run doctor to confirm.\n", "已恢复 " . basename($src) . "，请再次运行 doctor 确认。\n");
+                exit(0);
+            }
+        }
+        echo L("doctor: FAILED — use php bin/panel restore --list to recover.\n", "doctor：失败 —— 使用 php bin/panel restore --list 恢复。\n");
+        exit(1);
+        // no break
+
+    case 'status':
+        $admin = new AdminClient((string) $config->get('caddy.admin_api', 'http://127.0.0.1:2019'));
+        $r = $admin->config();
+        $sites = (new SiteManager())->all();
+        $apiState = $r['ok']
+            ? L("reachable ({$r['latency']}ms)", "可达（{$r['latency']}ms）")
+            : L("unreachable ({$r['error']})", "不可达（{$r['error']}）");
+        $enabled = count(array_filter($sites, static fn($s) => (int) $s['enabled'] === 1));
+        echo L("Admin API: {$apiState}\n", "Admin API: {$apiState}\n");
+        echo L(
+            "Sites: " . count($sites) . " ({$enabled} enabled)\n",
+            "站点: " . count($sites) . "（启用 {$enabled}）\n"
+        );
+        echo L("Last good config: ", "上次可用配置：");
+        echo Recovery::hasLastGood()
+            ? L("available\n", "可用\n")
+            : L("none yet\n", "暂无\n");
+        break;
+
+    default:
+        echo L("Unknown command: {$cmd}\n", "未知命令：{$cmd}\n");
+        echo L("Run php bin/panel help for usage.\n", "运行 php bin/panel help 查看用法。\n");
+        exit(1);
+}
