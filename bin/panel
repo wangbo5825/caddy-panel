@@ -79,6 +79,55 @@ function adaptLocal(Config $config): array
 }
 
 switch ($cmd) {
+    case 'install':
+        $username = 'admin';
+        $password = '';
+        $adminApi = 'http://127.0.0.1:2019';
+        $autoLogin = true;
+        foreach (array_slice($argvAll, 2) as $a) {
+            if (str_starts_with($a, '--username=')) {
+                $username = substr($a, strlen('--username='));
+            }
+            if (str_starts_with($a, '--password=')) {
+                $password = substr($a, strlen('--password='));
+            }
+            if (str_starts_with($a, '--admin-api=')) {
+                $adminApi = substr($a, strlen('--admin-api='));
+            }
+            if ($a === '--no-auto-login') {
+                $autoLogin = false;
+            }
+        }
+        if ($password === '') {
+            exit(L('install requires --password=... (non-interactive)', '安装需要 --password=...（非交互）') . PHP_EOL);
+        }
+        if (strlen($password) < 8) {
+            exit(L('Password must be at least 8 characters', '密码至少 8 位') . PHP_EOL);
+        }
+        if (!preg_match('/^[a-zA-Z0-9_.-]{2,32}$/', $username)) {
+            exit(L('Invalid username', '用户名不合法') . PHP_EOL);
+        }
+        if (!preg_match('#^(https?|unix)://#i', $adminApi)) {
+            exit(L('Admin API address must start with http(s):// or unix://', 'Admin API 地址需以 http(s):// 或 unix:// 开头') . PHP_EOL);
+        }
+        Db::get();
+        $count = (int) Db::get()->query('SELECT COUNT(*) c FROM users')->fetch()['c'];
+        if ($count > 0) {
+            exit(L('Admin account already exists; use passwd to reset', '管理员已存在，请用 passwd 重置密码') . PHP_EOL);
+        }
+        $config->set('auth.allow_local_auto_login', $autoLogin);
+        $config->set('auth.setup_token', '');
+        $config->set('caddy.admin_api', $adminApi);
+        if (!$config->save()) {
+            exit(L('Could not write config.php', '无法写入 config.php') . PHP_EOL);
+        }
+        Db::get()->prepare('INSERT INTO users(username, password_hash, created_at) VALUES (?, ?, ?)')
+            ->execute([$username, password_hash($password, PASSWORD_ARGON2ID), date('c')]);
+        @mkdir(APP_ROOT . '/var', 0775, true);
+        file_put_contents(APP_ROOT . '/var/installed', date('c'));
+        Audit::log('cliInstall', $username, 'ok', 'cli');
+        echo L("Installed admin user: {$username}" . PHP_EOL, "已安装管理员：{$username}" . PHP_EOL);
+        break;
     case 'help':
     case '--help':
         echo L("caddy-panel CLI\n", "caddy-panel 命令行\n");

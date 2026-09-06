@@ -16,8 +16,10 @@ const routes = [
   { path: '/login', name: 'login', component: () => import('./views/LoginView.vue'), meta: { titleKey: 'app.brand' } },
 ]
 
+const base = (window as any).__PANEL_BASE__ || '/'
+
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(base),
   routes,
 })
 

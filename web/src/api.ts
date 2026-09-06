@@ -23,7 +23,9 @@ export async function request<T = any>(path: string, options: { method?: string;
   if (!['GET', 'HEAD'].includes(method)) {
     headers['X-CSRF-Token'] = csrf
   }
-  const res = await fetch('/api' + path, {
+  const base = (window as any).__PANEL_BASE__ || '/'
+  const apiPrefix = base === '/' ? '/api' : base.replace(/\/+$/, '') + '/api'
+  const res = await fetch(apiPrefix + path, {
     method,
     headers,
     credentials: 'same-origin',

@@ -112,6 +112,15 @@ final class Bootstrap
         }
     }
 
+    private static function serveHtml(string $file): void
+    {
+        header('Content-Type: text/html; charset=utf-8');
+        $html = (string) file_get_contents($file);
+        $base = defined('PANEL_BASE') ? (string) PANEL_BASE : '/';
+        $base = '/' . trim($base, '/') . '/';
+        echo str_replace('__PANEL_BASE__', $base, $html);
+    }
+
     private static function serveApp(string $appRoot, string $path): void
     {
         // php -S 路由模式下：若请求的是 public 内真实存在的文件（install.php、构建产物等），直接输出
@@ -137,6 +146,10 @@ final class Bootstrap
                     'woff2' => 'font/woff2',
                     'map' => 'application/json',
                 ];
+                if ($ext === 'html') {
+                    self::serveHtml($file);
+                    return;
+                }
                 if (isset($mime[$ext])) {
                     header('Content-Type: ' . $mime[$ext]);
                 }
@@ -146,7 +159,7 @@ final class Bootstrap
         }
         $index = $appRoot . '/public/index.html';
         if (is_file($index)) {
-            readfile($index);
+            self::serveHtml($index);
             return;
         }
         http_response_code(200);
