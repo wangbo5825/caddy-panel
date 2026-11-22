@@ -92,7 +92,7 @@ final class SiteManager
         return $this->find($id);
     }
 
-    public function fragmentFor(array $site): string
+    public function fragmentFor(array $site, bool $withPrivacySnippet = false): string
     {
         if ((int) $site['advanced'] === 1 && trim((string) $site['raw']) !== '') {
             return trim((string) $site['raw']);
@@ -104,19 +104,23 @@ final class SiteManager
         }
         $address = implode(' ', $domains);
         $mode = (string) $site['mode'];
+        $privacyLine = $withPrivacySnippet ? "\n    import frampp_fingerprint_privacy" : '';
 
         if ($mode === 'php') {
             $root = (string) ($form['root'] ?? 'htdocs/www');
-            return $address . " {\n    import frampp_fingerprint_privacy\n    root * " . $root . "\n    php_server\n}";
+            return $address . ' {' . $privacyLine . "\n    root * " . $root . "\n    php_server\n}";
         }
         if ($mode === 'static') {
             $root = (string) ($form['root'] ?? 'htdocs');
-            return $address . " {\n    import frampp_fingerprint_privacy\n    root * " . $root . "\n    file_server\n}";
+            return $address . ' {' . $privacyLine . "\n    root * " . $root . "\n    file_server\n}";
         }
         // reverse_proxy
         $upstreams = array_values(array_filter(array_map('trim', (array) ($form['upstreams'] ?? []))));
         $up = $upstreams ? implode(' ', $upstreams) : '127.0.0.1:9000';
-        $lines = [$address . ' {', '    import frampp_fingerprint_privacy'];
+        $lines = [$address . ' {'];
+        if ($withPrivacySnippet) {
+            $lines[] = '    import frampp_fingerprint_privacy';
+        }
         if (!empty($form['lb_policy'])) {
             $lines[] = '    reverse_proxy ' . $up . ' {';
             $lines[] = '        lb_policy ' . (string) $form['lb_policy'];
@@ -135,6 +139,9 @@ final class SiteManager
     public function writeFragments(Config $config): array
     {
         $dir = $config->fragmentsDir();
+        $globalFile = $config->globalFile();
+        $withPrivacySnippet = is_file($globalFile)
+            && str_contains((string) file_get_contents($globalFile), '(frampp_fingerprint_privacy)');
         if (!is_dir($dir)) {
             @mkdir($dir, 0775, true);
         }
@@ -150,7 +157,7 @@ final class SiteManager
                 }
                 continue;
             }
-            $content = $this->fragmentFor($site);
+            $content = $this->fragmentFor($site, $withPrivacySnippet);
             file_put_contents($path, $content . "\n");
             $hash = hash('sha256', $content);
             Db::get()->prepare('UPDATE sites SET file_hash=? WHERE id=?')->execute([$hash, $site['id']]);
