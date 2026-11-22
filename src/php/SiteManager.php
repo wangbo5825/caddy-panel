@@ -107,16 +107,16 @@ final class SiteManager
 
         if ($mode === 'php') {
             $root = (string) ($form['root'] ?? 'htdocs/www');
-            return $address . " {\n    root * " . $root . "\n    php_server\n}";
+            return $address . " {\n    import frampp_fingerprint_privacy\n    root * " . $root . "\n    php_server\n}";
         }
         if ($mode === 'static') {
             $root = (string) ($form['root'] ?? 'htdocs');
-            return $address . " {\n    root * " . $root . "\n    file_server\n}";
+            return $address . " {\n    import frampp_fingerprint_privacy\n    root * " . $root . "\n    file_server\n}";
         }
         // reverse_proxy
         $upstreams = array_values(array_filter(array_map('trim', (array) ($form['upstreams'] ?? []))));
         $up = $upstreams ? implode(' ', $upstreams) : '127.0.0.1:9000';
-        $lines = [$address . ' {'];
+        $lines = [$address . ' {', '    import frampp_fingerprint_privacy'];
         if (!empty($form['lb_policy'])) {
             $lines[] = '    reverse_proxy ' . $up . ' {';
             $lines[] = '        lb_policy ' . (string) $form['lb_policy'];

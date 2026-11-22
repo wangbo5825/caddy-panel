@@ -48,6 +48,7 @@ final class AdminClient
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT => 10,
             CURLOPT_CONNECTTIMEOUT => 5,
+            CURLOPT_USERAGENT => 'Mozilla/5.0 (compatible; Application)',
             CURLOPT_HTTPHEADER => array_merge(['Accept: application/json'], $headers),
         ]);
         if ($this->socketPath !== null) {

@@ -30,7 +30,7 @@ $T = [
         'init_fail' => 'Initialization failed: {err}',
         'switch_zh' => '中文',
         'checks' => [
-            ['PHP 8.1+', 'Current {v}'],
+            ['PHP runtime', 'Required version available'],
             ['pdo_sqlite', 'Metadata, audit and log aggregation'],
             ['openssl', 'Password hashing and certificate parsing'],
             ['curl', 'Caddy Admin API client'],
@@ -62,7 +62,7 @@ $T = [
         'init_fail' => '初始化失败：{err}',
         'switch_zh' => 'English',
         'checks' => [
-            ['PHP 版本 ≥ 8.1', '当前 {v}'],
+            ['PHP 运行时', '所需版本可用'],
             ['pdo_sqlite', '元数据、审计、日志聚合'],
             ['openssl', '密码哈希与证书解析'],
             ['curl', 'Caddy Admin API 客户端'],
@@ -95,7 +95,7 @@ $installed = is_file($appRootReal . '/var/installed');
 $webRootReal = realpath(__DIR__);
 
 $checks = [
-    [PHP_VERSION_ID >= 80100, tpl($M['checks'][0][0], ['v' => PHP_VERSION]), tpl($M['checks'][0][1], ['v' => PHP_VERSION])],
+    [PHP_VERSION_ID >= 80100, $M['checks'][0][0], $M['checks'][0][1]],
     [extension_loaded('pdo_sqlite'), $M['checks'][1][0], $M['checks'][1][1]],
     [extension_loaded('openssl'), $M['checks'][2][0], $M['checks'][2][1]],
     [extension_loaded('curl'), $M['checks'][3][0], $M['checks'][3][1]],
